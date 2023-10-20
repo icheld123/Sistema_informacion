@@ -1,0 +1,5 @@
+<form (ngSubmit)="getDatos()" #myForm="ngForm" id="form-application" [formGroup]="formulario">
+  <label for="nombre">Dato:</label>
+  <input formControlName="dato" type="text" id="dato" name="dato" required>
+  <button type="submit">Guardar</button>
+</form>

@@ -1,0 +1,21 @@
+.nav-bar{
+  background-color: coral;
+  padding: 2em;
+}
+nav ul{
+  display: flex;
+  justify-content: space-between;
+  list-style:none;
+  margin: 1em;
+}
+nav ul li a{
+  padding: 1em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+nav ul li a:hover{
+  background-color: rgb(176, 183, 97);
+  border-radius: 1em;
+}
