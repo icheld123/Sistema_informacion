@@ -1,1 +1,35 @@
-<p>busqueda-transf-claves works!</p>
+<div class="container">
+  <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+    <div class="d-flex align-items-center pb-2">
+      <label class="col-auto px-4" for="funcion">Seleccione función hash:</label>
+      <select class="form-select col" id="funcion" aria-label="Default select example" formControlName="funcion">
+        <option value="" selected>--Seleccione una opcion</option>
+        <option value="1">Mod</option>
+        <option value="2">Cuadrado</option>
+        <option value="3">Truncamiento</option>
+        <option value="4">plegamiento suma</option>
+        <option value="5">plegamiento multiplicacion</option>
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center pb-2">
+      <label class="col-auto px-4" for="tamano">Tamaño de la lista:</label>
+      <div class="col">
+        <input type="text" class="form-control" id="tamano" formControlName="tamano">
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center pb-4">
+      <label class="col-auto px-4" for="solucionador">Solucionador de colisiones:</label>
+      <select class="form-select col" id="solucionador" aria-label="Default select example" formControlName="solucionador">
+        <option value="" selected>--Seleccione una opcion</option>
+        <option value="1">Lineal</option>
+        <option value="2">Cuadrático</option>
+        <option value="3">Listas</option>
+        <option value="4">Doble hash</option>
+      </select>
+    </div>
+
+  </form>
+</div>
+
