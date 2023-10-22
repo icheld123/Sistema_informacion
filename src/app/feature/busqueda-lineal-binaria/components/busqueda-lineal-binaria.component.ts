@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
 
 @Component({
   selector: 'app-busqueda-lineal-binaria',
@@ -7,28 +8,37 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./busqueda-lineal-binaria.component.css']
 })
 export class BusquedaLinealBinariaComponent {
-  private datos: number[] = [];
-  public formulario: FormGroup;
+  public datos: number[] = [];
+  public datosOrdenados: number[] = [];
+  public formularioAgregar: FormGroup;
+  public formularioBusqueda: FormGroup;
+  public valorBuscado: number;
+  public indexBuscadoOrdenado: number;
+  public indexBuscadoOriginal: number;
+  public estadoBusquedaBinaria: boolean = false;
+  public inicioBusqueda: boolean = false;
 
   constructor(){}
 
-  busquedaBinaria(arr: number[], num: number): number {
-    let izq: number = 0;
-    let der: number = arr.length - 1;
+  busquedaBinaria(arreglo: number[], elemento: number): number {
+    console.log(arreglo);
+    console.log(elemento);
+    let inicio = 0;
+    let fin = arreglo.length - 1;
 
-    while (izq <= der) {
-      const mid: number = izq + Math.floor((der - izq) / 2);
-
-      if (arr[mid] === num) {
-        return mid;
-      } else if (arr[mid] < num) {
-        izq = mid + 1;
+    while (inicio <= fin) {
+      const mitad = Math.floor((inicio + fin) / 2);
+      //console.log(mitad);
+      if (arreglo[mitad] === elemento) {
+        return mitad; // Elemento encontrado, se devuelve la posición
+      } else if (arreglo[mitad] < elemento) {
+        inicio = mitad + 1;
       } else {
-        der = mid - 1;
+        fin = mitad - 1;
       }
     }
 
-    return -1;
+    return -1; // Elemento no encontrado
   }
 
   busquedaSecuencial(arr: number[], num: number): number {
@@ -47,62 +57,64 @@ export class BusquedaLinealBinariaComponent {
     return index;
   }
 
-  ordenar(arr: number[]): number[] {
-    for (let i = 1; i < arr.length; i++) {
-      const clave: number = arr[i];
-      let izq: number = 0;
-      let der: number = i - 1;
-
-      while (izq <= der) {
-        const mid: number = Math.floor((izq + der) / 2);
-
-        if (arr[mid] < clave) {
-          izq = mid + 1;
-        } else {
-          der = mid - 1;
-        }
-      }
-
-      for (let j = i; j >= izq + 1; j--) {
-        arr[j] = arr[j - 1];
-      }
-
-      arr[izq] = clave;
-    }
-
-    return arr;
-  }
-
-  getTam(): void{
-
-  }
-
   getDatos(): void {
-    try {
-      const valor: number = this.formulario.value.dato;
-
-      if (!isNaN(valor)) {
-        this.datos.push(valor);
-      } else {
-        console.log("\n¡Error! Debe ingresar un número entero.");
+    if(this.formularioAgregar.valid){
+      let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
+      if (!this.datos.includes(valorIngresado)){
+        this.datos.push(valorIngresado);
+        this.formularioAgregar.reset();
       }
-    } catch (error) {
-      console.log("\n¡Error! Debe ingresar un número entero.");
+      else {
+        alert("La clave a ingresar ya existe");
+      }
     }
-    console.log(this.datos.length)
-    for (let i in this.datos){
-      console.log(this.datos[i]);
+  }
+
+  iniciarBusqueda(seleccion: number): void {
+    if(this.formularioBusqueda.valid){
+      this.inicioBusqueda = true;
+      this.valorBuscado = parseInt(this.formularioBusqueda.value.buscar, 10);
+
+      if(seleccion == 2){
+        this.mostrarArregloOrdenado();
+        this.datosOrdenados = [...this.datos];
+        this.indexBuscadoOrdenado = this.busquedaBinaria(this.datosOrdenados.sort((a, b) => a - b), this.valorBuscado);
+        if (this.indexBuscadoOrdenado > -1){
+          console.log("Numero encontrado - index: " + this.indexBuscadoOrdenado)
+        }
+        this.indexBuscadoOriginal = this.busquedaSecuencial(this.datos, this.valorBuscado);
+        console.log("Numero encontrado original - index: " + this.indexBuscadoOriginal)
+      }
+
+      if(seleccion == 1){
+        this.ocultarArregloOrdenado();
+        this.indexBuscadoOriginal = this.busquedaSecuencial(this.datos, this.valorBuscado);
+      }
     }
-    this.formulario.reset();
+  }
+
+  private mostrarArregloOrdenado(){
+    this.estadoBusquedaBinaria = true;
+  }
+
+  private ocultarArregloOrdenado(){
+    this.estadoBusquedaBinaria = false;
   }
 
   private construirFormulario(){
-    this.formulario = new FormGroup({
-      dato: new FormControl("", Validators.required)
+    this.formularioAgregar = new FormGroup({
+      dato: new FormControl("", [Validators.required, isNumberPositiveValidator()])
+    });
+  }
+
+  private construirFormularioBuscar(){
+    this.formularioBusqueda = new FormGroup({
+      buscar: new FormControl("", [Validators.required, isNumberPositiveValidator()])
     });
   }
 
   ngOnInit(): void {
     this.construirFormulario();
+    this.construirFormularioBuscar();
   }
 }

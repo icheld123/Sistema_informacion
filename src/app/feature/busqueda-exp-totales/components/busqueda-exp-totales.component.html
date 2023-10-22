@@ -1,1 +1,80 @@
-<p>busqueda-exp-totales works!</p>
+<div class="container pt-4">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+        <div class="mb-3 row">
+          <label for="nombre" class="col-sm-2 col-form-label">Dato</label>
+          <div class="col-sm-8">
+            <input formControlName="dato" type="text" id="dato" name="dato" class="form-control">
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container p-4" *ngIf="cantidadClaves() > 0">
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <form #myForm2="ngForm" id="formularioBusqueda" [formGroup]="formularioBusqueda">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Clave" formControlName="buscar">
+          <button class="btn btn-primary" type="button" (click)="iniciarAccion(1)">Buscar</button>
+          <button class="btn btn-secondary" type="button" (click)="iniciarAccion(2)">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container p-2" *ngIf="busquedaIniciada">
+  <p>{{mensaje}}</p>
+</div>
+
+<div class="container">
+  <table class="table table-bordered">
+    <thead class="table-borderless">
+      <tr class="table-light">
+        <th style="width: 50px;">Index</th>
+        <ng-container *ngFor="let columna of tabla[0]; let i = index">
+          <th class="text-center">{{ i }}</th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fila of tabla; let filaIndex = index">
+        <th class="text-center encabezado">{{ filaIndex + 1 }}</th>
+        <td *ngFor="let valor of fila; let columnaIndex = index"
+            [className]="'text-center ' + (filaIndex == filaBuscado && columnaIndex == colBuscado ? 'celda-activa' : '')"
+            >{{ valor }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="container" *ngIf="this.contarNumColisiones() > 0">
+  <table class="table table-bordered">
+    <thead>
+      <tr class="text-center table-light">
+        <th>Posición</th>
+        <th>Claves en colisión</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of diccColisiones | keyvalue"
+          [className]="'text-center ' + (convertirStringEnNumero(item.key) == filaBuscadoColision ? 'table-warning' : '')">
+        <td class="text-center">{{ item.key }}</td>
+        <td>
+          <ul>
+            <li *ngFor="let number of item.value">{{ number }}</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+

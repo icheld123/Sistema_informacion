@@ -1,5 +1,70 @@
-<form (ngSubmit)="getDatos()" #myForm="ngForm" id="form-application" [formGroup]="formulario">
-  <label for="nombre">Dato:</label>
-  <input formControlName="dato" type="text" id="dato" name="dato" required>
-  <button type="submit">Guardar</button>
-</form>
+<div class="container p-4">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+        <div class="mb-3 row">
+          <label for="nombre" class="col-sm-2 col-form-label">Dato</label>
+          <div class="col-sm-8">
+            <input formControlName="dato" type="text" id="dato" name="dato" class="form-control">
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <table class="table table-bordered">
+    <tbody>
+      <tr>
+        <ng-container *ngFor="let numero of datos; let i = index">
+          <td class="text-center"
+              [className]="'text-center ' + (i === indexBuscadoOriginal ? 'celda-activa' : '')">
+              {{ numero }}
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="container p-4" *ngIf="datos.length > 1">
+  <h3 class="text-center">Busqueda</h3>
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <form #myForm2="ngForm" id="formularioBusqueda" [formGroup]="formularioBusqueda">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Valor a buscar" formControlName="buscar">
+          <button class="btn btn-primary" type="button" (click)="iniciarBusqueda(1)">Lineal</button>
+          <button class="btn btn-secondary" type="button" (click)="iniciarBusqueda(2)">Binaria</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="container" *ngIf="inicioBusqueda">
+  <p>Index de la clave (arreglo original): {{indexBuscadoOriginal + 1}}</p>
+
+  <div *ngIf="estadoBusquedaBinaria">
+    <p><b>Arreglo ordenado:</b> </p>
+    <p>Index de la clave (arreglo ordenado): {{indexBuscadoOrdenado + 1}}</p>
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <ng-container *ngFor="let numero of datosOrdenados; let i = index">
+            <td class="text-center"
+                [className]="'text-center ' + (i === indexBuscadoOrdenado ? 'celda-activa' : '')">
+                {{ numero }}
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
+
+const OUT_OF_RANGE: number = -1;
 
 @Component({
   selector: 'app-busqueda-exp-parciales',
@@ -9,40 +13,49 @@ export class BusquedaExpParcialesComponent {
   filas: number = 3;
   columnas: number = 2;
   densidad: number = 0.85;
-  tabla: number[][] = Array.from({ length: this.filas }, () => new Array(this.columnas).fill(null));
+  public formularioAgregar: FormGroup;
+  public formularioBusqueda: FormGroup;
+  tabla: Array<Array<number | null>> = Array.from({ length: this.filas }, () => Array(this.columnas).fill(null));
   tam: number = 0;
   arrColisiones: number[] = [];
+  public filaBuscado: number;
+  public filaBuscadoColision: number;
+  public colBuscado: number;
+  public mensaje: string;
+  public busquedaIniciada: boolean = false;
   diccColisiones: { [key: string]: number[] } = {};
   expansionCount: number = 1;
 
   constructor() {}
 
-  // insertar(valor: number): void {
-  //   if (this.validarExistenciaClave(valor)) {
-  //     const indice = valor % this.columnas;
+  insertar(valor: number): void {
+    if (this.validarExistenciaClave(valor)) {
+      const indice = valor % this.columnas;
 
-  //     const todasFilasOcupadas = this.tabla.every(
-  //       (row) => row[indice] !== null
-  //     );
+      const todasFilasOcupadas = this.tabla.every(
+        (row) => row[indice] !== null
+      );
 
-  //     if (todasFilasOcupadas) {
-  //       this.agregarColision(indice, valor);
-  //     } else {
-  //       const fila = this.filaVacia(indice);
-  //       this.tabla[fila][indice] = valor;
-  //     }
+      if (todasFilasOcupadas) {
+        this.agregarColision(indice, valor);
+      } else {
+        const fila = this.filaVacia(indice);
+        if(fila != null){
+          this.tabla[fila][indice] = valor;
+        }
+      }
 
-  //     if (
-  //       (this.cantidadClaves() + this.contarNumColisiones()) /
-  //         (this.filas * this.columnas) >=
-  //       this.densidad
-  //     ) {
-  //       this.expansionParcial();
-  //     }
-  //   } else {
-  //     console.log(`\nLa clave ${valor} que desea agregar ya existe`);
-  //   }
-  // }
+      if (
+        (this.cantidadClaves() + this.contarNumColisiones()) /
+          (this.filas * this.columnas) >=
+        this.densidad
+      ) {
+        this.expansionParcial();
+      }
+    } else {
+      alert(`\nLa clave ${valor} que desea agregar ya existe`);
+    }
+  }
 
   contarNumColisiones(): number {
     let suma = 0;
@@ -98,158 +111,237 @@ export class BusquedaExpParcialesComponent {
   }
 
   expansionParcial(): void {
-    const i = this.expansionCount;
-    const nuevoTam = Math.floor(Math.pow(1.5, i) * this.columnas);
-
-    const nuevaTabla = Array.from({ length: this.filas }, () =>
-      new Array(nuevoTam).fill(null)
+    this.columnas += Math.round(this.columnas * 0.4);
+    const nueva_tabla: number[][] = Array.from(
+      { length: this.filas },
+      () => Array(this.columnas).fill(null)
     );
 
-    for (let filaIndice = 0; filaIndice < this.filas; filaIndice++) {
-      for (let col = 0; col < this.columnas; col++) {
-        const valor = this.tabla[filaIndice][col];
+    for (let fila_indice = 0; fila_indice < this.filas; fila_indice++) {
+      for (let col = 0; col < Math.floor(this.columnas * 0.75); col++) {
+        const valor = this.tabla[fila_indice][col];
         if (valor !== null) {
-          const nIndice = valor % Math.floor(Math.pow(1.5, i) * this.columnas);
-          const nFila = this.filaVacia(nIndice, nuevaTabla);
-          if (nFila !== null) {
-            nuevaTabla[nFila][nIndice] = valor;
+          const new_indice = valor % this.columnas;
+          const new_fila = this.fila_vacia(new_indice, nueva_tabla);
+          if (new_fila !== null) {
+            nueva_tabla[new_fila][new_indice] = valor;
           } else {
-            this.agregarColision(nIndice, valor);
+            this.agregar_colision(new_indice, valor);
           }
         }
       }
     }
 
-    const auxColisiones: number[] = [];
-    for (const valor of Object.values(this.diccColisiones)) {
-      for (const numero of valor) {
-        const indice = numero % Math.floor(Math.pow(1.5, i) * this.columnas);
-        const fila = this.filaVacia(indice, nuevaTabla);
+    const aux_colisiones: number[] = [];
+    for (const valores of Object.values(this.diccColisiones)) {
+      for (const numero of valores) {
+        const indice = numero % this.columnas;
+        const fila = this.fila_vacia(indice, nueva_tabla);
         if (fila !== null) {
-          nuevaTabla[fila][indice] = numero;
+          nueva_tabla[fila][indice] = numero;
         } else {
-          auxColisiones.push(numero);
+          aux_colisiones.push(numero);
         }
       }
     }
 
-    this.columnas = nuevoTam;
-    this.tabla = nuevaTabla;
-    this.expansionCount++;
+    this.diccColisiones = {};
+    for (const numero of aux_colisiones) {
+      const new_indice = numero % this.columnas;
+      this.agregar_colision(new_indice, numero);
+    }
+
+    this.tabla = nueva_tabla;
   }
 
-  buscar(valorBuscar: number): string {
-    valorBuscar = parseInt(valorBuscar.toString());
+  fila_vacia(col_indice: number, tabla?: (number | null)[][]): number | null {
+    const tabla_original = tabla || this.tabla;
+    for (let fila = 0; fila < this.filas; fila++) {
+      if (tabla_original[fila][col_indice] === null) {
+        return fila;
+      }
+    }
+    return null;
+  }
+
+  agregar_colision(indice: number, valor: number): void {
+    const str_indice = indice.toString();
+    if (str_indice in this.diccColisiones) {
+      this.diccColisiones[str_indice].push(valor);
+    } else {
+      this.diccColisiones[str_indice] = [valor];
+    }
+  }
+
+
+  buscar(valorBuscar: number): void {
+    let existeClave = false;
     let numFila = 0;
-    let resultado = "";
 
     for (const fila of this.tabla) {
       numFila++;
       if (fila.includes(valorBuscar)) {
-        resultado = `La clave ${valorBuscar} se encuentra en la fila ${numFila} y columna ${valorBuscar % this.columnas}`;
+        existeClave = true;
+        this.filaBuscado = numFila - 1;
+        this.colBuscado = valorBuscar % this.columnas;
+        this.filaBuscadoColision = OUT_OF_RANGE;
+        this.mensaje = `La clave ${valorBuscar} se encuentra en la fila ${numFila} y columna ${valorBuscar % this.columnas}`;
       }
     }
 
+    console.log("buscado: " + valorBuscar)
     for (const [clave, valor] of Object.entries(this.diccColisiones)) {
       for (const numero of valor) {
-        if (parseInt(clave) === valorBuscar) {
-          resultado = `La clave ${valorBuscar} se encuentra en la posición ${clave} del diccionario de colisiones`;
+        console.log("clave: " + parseInt(clave))
+        if (numero === valorBuscar) {
+          existeClave = true;
+          this.filaBuscado = OUT_OF_RANGE;
+          this.colBuscado = OUT_OF_RANGE;
+          this.filaBuscadoColision = parseInt(clave, 10);
+          this.mensaje = `La clave ${valorBuscar} se encuentra en la posición ${clave} del diccionario de colisiones`;
         }
       }
     }
 
-    if (resultado === "") {
-      resultado = `La clave ${valorBuscar} no se encuentra en la estructura`;
+    if (!existeClave) {
+      this.colBuscado = OUT_OF_RANGE;
+      this.filaBuscado = OUT_OF_RANGE;
+      this.filaBuscadoColision = OUT_OF_RANGE;
+      this.mensaje = `La clave ${valorBuscar} no se encuentra en la estructura`;
     }
-
-    return resultado;
   }
 
   toString(): string {
     return this.tabla.map((fila) => fila.join(" ")).join("\n");
   }
 
-  eliminar(valorRecibido: number): void {
-    let seElimino = false;
-    const valorEliminar = parseInt(valorRecibido.toString());
+  eliminar(valor_recibido: number): void {
+    let se_elimino = false;
 
-    for (const [clave, valor] of Object.entries(this.diccColisiones)) {
-      for (let i = valor.length - 1; i >= 0; i--) {
-        if (valor[i] === valorEliminar) {
-          valor.splice(i, 1);
-          seElimino = true;
+    for (const valores of Object.values(this.diccColisiones)) {
+      for (let i = 0; i < valores.length; i++) {
+        if (valor_recibido === valores[i]) {
+          valores.splice(i, 1);
+          i--;
+          se_elimino = true;
         }
       }
     }
 
-    // for (const fila of this.tabla) {
-    //   for (let i = 0; i < fila.length; i++) {
-    //     if (fila[i] === valorEliminar) {
-    //       fila[i] = null;
-    //       seElimino = true;
-    //     }
-    //   }
-    // }
+    for (const fila of this.tabla) {
+      for (let i = 0; i < fila.length; i++) {
+        if (valor_recibido === fila[i]) {
+          fila[i] = null;
+          se_elimino = true;
+        }
+      }
+    }
 
-    if (!seElimino) {
-      console.log(`La clave ${valorRecibido} que desea eliminar no existe`);
+    if (!se_elimino) {
+      console.log(`La clave ${valor_recibido} que desea eliminar no existe`);
     }
 
     if (
       (this.cantidadClaves() + this.contarNumColisiones()) / this.columnas <=
       1.05
     ) {
-      if (this.columnas >= 4) {
+      if (this.columnas >= 3) {
         this.reduccionParcial();
       }
     }
   }
 
+
   reduccionParcial(): void {
-    const i = this.expansionCount;
+    this.columnas = Math.round(this.columnas / 1.5);
+    const nueva_tabla: (number | null)[][] = Array.from({ length: this.filas }, () => Array(this.columnas).fill(null));
 
-    const nuevoTam = Math.floor(Math.pow(1.5, i - 1) * this.columnas);
-
-    const nuevaTabla = Array.from({ length: this.filas }, () =>
-      new Array(nuevoTam).fill(null)
-    );
-
-    for (let filaIndice = 0; filaIndice < this.filas; filaIndice++) {
-      for (let col = 0; col < nuevoTam; col++) {
-        const valor = this.tabla[filaIndice][col];
+    for (let fila_indice = 0; fila_indice < this.filas; fila_indice++) {
+      for (let col = 0; col < this.columnas * 1.5; col++) {
+        const valor = this.tabla[fila_indice][col];
         if (valor !== null) {
-          const newIndice = valor % nuevoTam;
-          const newFila = this.filaVacia(newIndice, nuevaTabla);
-          if (newFila !== null) {
-            nuevaTabla[newFila][newIndice] = valor;
+          const new_indice = valor % this.columnas;
+          const new_fila = this.fila_vacia(new_indice, nueva_tabla);
+          if (new_fila !== null) {
+            nueva_tabla[new_fila][new_indice] = valor;
           } else {
-            this.agregarColision(newIndice, valor);
+            this.agregar_colision(new_indice, valor);
           }
         }
       }
     }
 
-    const auxColisiones: number[] = [];
+    const aux_colisiones: number[] = [];
+
     for (const valor of Object.values(this.diccColisiones)) {
       for (const numero of valor) {
-        const indice = numero % nuevoTam;
-        const fila = this.filaVacia(indice, nuevaTabla);
+        const indice = numero % this.columnas;
+        const fila = this.fila_vacia(indice, nueva_tabla);
         if (fila !== null) {
-          nuevaTabla[fila][indice] = numero;
+          nueva_tabla[fila][indice] = numero;
         } else {
-          auxColisiones.push(numero);
+          aux_colisiones.push(numero);
         }
       }
     }
 
-    this.columnas = nuevoTam;
-    this.tabla = nuevaTabla;
-    this.expansionCount--;
-
     this.diccColisiones = {};
-    for (const numero of auxColisiones) {
-      const newIndice = numero % nuevoTam;
-      this.agregarColision(newIndice, numero);
+
+    for (const numero of aux_colisiones) {
+      const new_indice = numero % this.columnas;
+      this.agregar_colision(new_indice, numero);
+    }
+
+    this.tabla = nueva_tabla;
+  }
+
+
+  public iniciarAccion(opcion: number): void{
+    if(this.formularioBusqueda.valid){
+      let valorIngresado = parseInt(this.formularioBusqueda.value.buscar, 10)
+      if(opcion == 1){
+        this.busquedaIniciada = true;
+        console.log(this.buscar(valorIngresado));
+        this.formularioBusqueda.reset();
+      }
+      else{
+        this.busquedaIniciada = false;
+        this.colBuscado = OUT_OF_RANGE;
+        this.filaBuscado = OUT_OF_RANGE;
+        this.eliminar(valorIngresado);
+        this.formularioBusqueda.reset();
+      }
     }
   }
+
+  public convertirStringEnNumero(valor: string){
+    return parseInt(valor);
+  }
+
+  getDatos(): void {
+    if(this.formularioAgregar.valid){
+      let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
+      this.insertar(valorIngresado);
+      this.formularioAgregar.reset();
+    }
+  }
+
+  private construirFormulario(){
+    this.formularioAgregar = new FormGroup({
+      dato: new FormControl("", [Validators.required, isNumberPositiveValidator()])
+    });
+  }
+
+  private construirFormularioBuscar(){
+    this.formularioBusqueda = new FormGroup({
+      buscar: new FormControl("", [Validators.required, isNumberPositiveValidator()])
+    });
+  }
+
+  ngOnInit(): void {
+    this.construirFormulario();
+    this.construirFormularioBuscar();
+  }
 }
+
+

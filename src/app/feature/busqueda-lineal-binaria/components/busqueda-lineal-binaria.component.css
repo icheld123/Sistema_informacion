@@ -1,0 +1,13 @@
+/* .bordes-tabla {
+  border: 1px solid #000;
+} */
+
+.bordes-tabla td {
+  border: 1px solid #000; /* Establece un borde sólido de 1 píxel de grosor en color negro para las celdas */
+  padding: 0.5rem;
+}
+
+.celda-activa {
+  background-color: #8ae48a; /* Color de fondo azul, puedes personalizarlo */
+  font-weight: bold;
+}

@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { BusquedaExpParcialesComponent } from "./components/busqueda-exp-parciales.component";
 import { BusquedaExpParcialesRoutingModule } from "./busqueda-exp-parciales-routing.module";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 
 @NgModule({
@@ -11,11 +12,15 @@ import { BusquedaExpParcialesRoutingModule } from "./busqueda-exp-parciales-rout
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   exports: [
     CommonModule,
-    BusquedaExpParcialesRoutingModule
+    BusquedaExpParcialesRoutingModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [
 
