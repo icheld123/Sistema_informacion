@@ -18,6 +18,13 @@
 
 <div class="container">
   <table class="table table-bordered">
+    <thead class="table-borderless">
+      <tr class="table-light">
+        <ng-container *ngFor="let columna of datos; let i = index">
+          <th class="text-center">{{ i + 1 }}</th>
+        </ng-container>
+      </tr>
+    </thead>
     <tbody>
       <tr>
         <ng-container *ngFor="let numero of datos; let i = index">
@@ -54,6 +61,13 @@
     <p><b>Arreglo ordenado:</b> </p>
     <p>Index de la clave (arreglo ordenado): {{indexBuscadoOrdenado + 1}}</p>
     <table class="table table-bordered">
+      <thead class="table-borderless">
+        <tr class="table-light">
+          <ng-container *ngFor="let columna of datos; let i = index">
+            <th class="text-center">{{ i + 1 }}</th>
+          </ng-container>
+        </tr>
+      </thead>
       <tbody>
         <tr>
           <ng-container *ngFor="let numero of datosOrdenados; let i = index">
