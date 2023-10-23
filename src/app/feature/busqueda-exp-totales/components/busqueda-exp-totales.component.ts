@@ -4,6 +4,14 @@ import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form
 
 const OUT_OF_RANGE: number = -1;
 const CLAVE_EXISTE: string = "La clave a ingresar ya existe.";
+const COLUMNAS_MINIMAS_PARA_REDUCCION_TOTAL: number = 4;
+const OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION: number = COLUMNAS_MINIMAS_PARA_REDUCCION_TOTAL/2;
+const CLAVE_A_ELIMINAR_NO_EXISTE: string = "La clave que desea eliminar no existe.";
+const CANTIDAD_FILAS: number = 3;
+const CANTIDAD_COLUMNAS_INICIALES: number = 2;
+const DENSIDAD_PARA_EXPANSION: number = 0.85;
+const DENSIDAD_PARA_REDUCCION: number = 1.05;
+
 
 @Component({
   selector: 'app-busqueda-exp-totales',
@@ -14,9 +22,9 @@ export class BusquedaExpTotalesComponent {
   public datos: number[] = [];
   public formularioAgregar: FormGroup;
   public formularioBusqueda: FormGroup;
-  private filas: number = 3;
-  private columnas: number = 2;
-  private densidad: number = 0.85;
+  private filas: number = CANTIDAD_FILAS;
+  private columnas: number = CANTIDAD_COLUMNAS_INICIALES;
+  private densidad: number = DENSIDAD_PARA_EXPANSION;
   public tabla: Array<Array<number | null>> = Array.from({ length: this.filas }, () => Array(this.columnas).fill(null));
   public diccColisiones: { [key: string]: number[] } = {};
   public filaBuscado: number;
@@ -75,11 +83,11 @@ export class BusquedaExpTotalesComponent {
   }
 
   private expansionTotal(): void {
-    this.columnas *= 2;
+    this.columnas *= OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION;
     const nueva_tabla: number[][] = Array.from({ length: this.filas }, () => Array(this.columnas).fill(null));
 
     for (let fila_indice = 0; fila_indice < this.filas; fila_indice++) {
-      for (let col = 0; col < this.columnas / 2; col++) {
+      for (let col = 0; col < this.columnas / OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION; col++) {
         const valor = this.tabla[fila_indice][col];
         if (valor !== null) {
           const new_indice = valor % this.columnas;
@@ -172,29 +180,29 @@ export class BusquedaExpTotalesComponent {
     }
 
     if (!se_elimino) {
-      console.log(`\nLa clave ${valor_recibido} que desea eliminar no existe`);
+      alert(CLAVE_A_ELIMINAR_NO_EXISTE);
     }
 
     if (
       (this.cantidadClaves() + this.contarNumColisiones()) /
         this.columnas <=
-      1.05
+        DENSIDAD_PARA_REDUCCION
     ) {
-      if (this.columnas >= 4) {
+      if (this.columnas >= COLUMNAS_MINIMAS_PARA_REDUCCION_TOTAL) {
         this.reduccion_total();
       }
     }
   }
 
   private reduccion_total(): void {
-    this.columnas /= 2;
+    this.columnas /= OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION;
     const nueva_tabla: (number | null)[][] = Array.from(
       { length: this.filas },
       () => Array(this.columnas).fill(null)
     );
 
     for (let fila_indice = 0; fila_indice < this.filas; fila_indice++) {
-      for (let col = 0; col < this.columnas * 2; col++) {
+      for (let col = 0; col < this.columnas * OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION; col++) {
         const valor = this.tabla[fila_indice][col];
         if (valor !== null) {
           const new_indice = valor % this.columnas;
