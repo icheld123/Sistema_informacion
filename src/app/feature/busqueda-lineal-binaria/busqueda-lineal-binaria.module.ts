@@ -1,9 +1,8 @@
-import { CommonModule} from "@angular/common";
 import { NgModule } from "@angular/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { BusquedaLinealBinariaComponent } from "./components/busqueda-lineal-binaria.component";
 import { BusquedaLinealBinariaRoutingModule } from "./busqueda-lineal-binaria-routing.module";
+import { SharedModule } from "src/app/shared/shared.module";
 
 
 @NgModule({
@@ -11,16 +10,11 @@ import { BusquedaLinealBinariaRoutingModule } from "./busqueda-lineal-binaria-ro
     BusquedaLinealBinariaComponent
   ],
   imports: [
-    CommonModule,
     RouterModule,
-    ReactiveFormsModule,
-    FormsModule
+    SharedModule
   ],
   exports: [
-    CommonModule,
-    BusquedaLinealBinariaRoutingModule,
-    ReactiveFormsModule,
-    FormsModule
+    BusquedaLinealBinariaRoutingModule
   ],
   providers: []
 })

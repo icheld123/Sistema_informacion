@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
 
 const OUT_OF_RANGE: number = -1;
+const CLAVE_EXISTE: string = "La clave a ingresar ya existe.";
 
 @Component({
   selector: 'app-busqueda-exp-totales',
@@ -18,14 +19,13 @@ export class BusquedaExpTotalesComponent {
   private densidad: number = 0.85;
   public tabla: Array<Array<number | null>> = Array.from({ length: this.filas }, () => Array(this.columnas).fill(null));
   public diccColisiones: { [key: string]: number[] } = {};
-  private expansionCount: number = 1;
   public filaBuscado: number;
   public filaBuscadoColision: number;
   public colBuscado: number;
   public busquedaIniciada: boolean = false;
   public mensaje: string = "";
 
-  public insertar(valor: number): void {
+  private insertar(valor: number): void {
     if (this.validarExistenciaClave(valor)) {
       const indice = valor % this.columnas;
       const todas_filas_ocupadas = this.tabla.every((row) => row[indice] !== null);
@@ -46,45 +46,25 @@ export class BusquedaExpTotalesComponent {
         this.expansionTotal();
       }
     } else {
-      alert(`\nLa clave ${valor} que desea agregar ya existe`);
+      alert(CLAVE_EXISTE);
     }
   }
 
-  contarNumColisiones() {
-    let suma = 0;
-    for (const valor of Object.values(this.diccColisiones)) {
-      suma += valor.length;
-    }
-    return suma;
-  }
-
-  agregarColision(indice: number, valor: number) {
+  private agregarColision(indice: number, valor: number) {
     const strIndice = String(indice);
     if (strIndice in this.diccColisiones) {
       this.diccColisiones[strIndice].push(valor);
     } else {
       this.diccColisiones[strIndice] = [valor];
     }
-    console.log("Estructura de colisiones:\n", this.diccColisiones);
   }
 
-  cantidadClaves() {
-    let total = 0;
-    for (const fila of this.tabla) {
-      for (const valor of fila) {
-        if (valor !== null) {
-          total++;
-        }
-      }
-    }
-    return total;
-  }
 
-  validarExistenciaClave(clave: number) {
+  private validarExistenciaClave(clave: number) {
     return this.tabla.flat().every(valor => valor !== clave);
   }
 
-  filaVacia(colIndice: number, tabla: Array<Array<number | null>> | null = null) {
+  private filaVacia(colIndice: number, tabla: Array<Array<number | null>> | null = null) {
     const tablaOriginal = tabla || this.tabla;
     for (let fila = 0; fila < this.filas; fila++) {
       if (tablaOriginal[fila][colIndice] === null) {
@@ -135,24 +115,6 @@ export class BusquedaExpTotalesComponent {
     }
 
     this.tabla = nueva_tabla;
-  }
-
-  public iniciarAccion(opcion: number): void{
-    if(this.formularioBusqueda.valid){
-      let valorIngresado = parseInt(this.formularioBusqueda.value.buscar, 10)
-      if(opcion == 1){
-        this.busquedaIniciada = true;
-        console.log(this.buscar(valorIngresado));
-        this.formularioBusqueda.reset();
-      }
-      else{
-        this.busquedaIniciada = false;
-        this.colBuscado = OUT_OF_RANGE;
-        this.filaBuscado = OUT_OF_RANGE;
-        this.eliminar(valorIngresado);
-        this.formularioBusqueda.reset();
-      }
-    }
   }
 
   private buscar(valor_buscar: number): void {
@@ -270,18 +232,6 @@ export class BusquedaExpTotalesComponent {
     this.tabla = nueva_tabla;
   }
 
-  public convertirStringEnNumero(valor: string){
-    return parseInt(valor);
-  }
-
-  getDatos(): void {
-    if(this.formularioAgregar.valid){
-      let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
-      this.insertar(valorIngresado);
-      this.formularioAgregar.reset();
-    }
-  }
-
   private construirFormulario(){
     this.formularioAgregar = new FormGroup({
       dato: new FormControl("", [Validators.required, isNumberPositiveValidator()])
@@ -292,6 +242,56 @@ export class BusquedaExpTotalesComponent {
     this.formularioBusqueda = new FormGroup({
       buscar: new FormControl("", [Validators.required, isNumberPositiveValidator()])
     });
+  }
+
+  public getDatos(): void {
+    if(this.formularioAgregar.valid){
+      let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
+      this.insertar(valorIngresado);
+      this.formularioAgregar.reset();
+    }
+  }
+
+  public iniciarAccion(opcion: number): void{
+    if(this.formularioBusqueda.valid){
+      let valorIngresado = parseInt(this.formularioBusqueda.value.buscar, 10)
+      if(opcion == 1){
+        this.busquedaIniciada = true;
+        this.buscar(valorIngresado);
+        this.formularioBusqueda.reset();
+      }
+      else{
+        this.busquedaIniciada = false;
+        this.colBuscado = OUT_OF_RANGE;
+        this.filaBuscado = OUT_OF_RANGE;
+        this.eliminar(valorIngresado);
+        this.formularioBusqueda.reset();
+      }
+    }
+  }
+
+  public contarNumColisiones() {
+    let suma = 0;
+    for (const valor of Object.values(this.diccColisiones)) {
+      suma += valor.length;
+    }
+    return suma;
+  }
+
+  public cantidadClaves() {
+    let total = 0;
+    for (const fila of this.tabla) {
+      for (const valor of fila) {
+        if (valor !== null) {
+          total++;
+        }
+      }
+    }
+    return total;
+  }
+
+  public convertirStringEnNumero(valor: string){
+    return parseInt(valor);
   }
 
   ngOnInit(): void {

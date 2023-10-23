@@ -5,7 +5,25 @@
         <div class="mb-3 row">
           <label for="nombre" class="col-sm-2 col-form-label">Dato</label>
           <div class="col-sm-8">
-            <input formControlName="dato" type="text" id="dato" name="dato" class="form-control">
+            <input
+              formControlName="dato"
+              type="text"
+              id="dato"
+              name="dato"
+              class="form-control"
+              onfocus="this.placeholder = ''"
+              onblur="this.placeholder = 'Ingrese dato'"
+              placeholder="Ingrese dato"
+              [class.is-valid]="datoField!.valid"
+              [class.is-invalid]="datoField!.touched && !datoField!.valid">
+            <div class="mensaje-error" *ngIf="!datoField!.valid  && (datoField!.dirty || datoField!.touched)">
+              <div *ngIf="datoField!.errors?.['required']">
+                *Este campo es requerido
+              </div>
+              <div *ngIf="datoField!.errors?.['isNumberPositive']">
+                *La dato debe ser un número positivo.
+              </div>
+            </div>
           </div>
           <div class="col-sm-2">
             <button class="btn btn-primary" type="submit">Guardar</button>
@@ -44,9 +62,25 @@
     <div class="col-6">
       <form #myForm2="ngForm" id="formularioBusqueda" [formGroup]="formularioBusqueda">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Valor a buscar" formControlName="buscar">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="buscar"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Ingrese clave'"
+            placeholder="Ingrese clave"
+            [class.is-valid]="buscarField!.valid"
+            [class.is-invalid]="buscarField!.touched && !buscarField!.valid">
           <button class="btn btn-primary" type="button" (click)="iniciarBusqueda(1)">Lineal</button>
           <button class="btn btn-secondary" type="button" (click)="iniciarBusqueda(2)">Binaria</button>
+        </div>
+        <div class="mensaje-error" *ngIf="!buscarField!.valid  && (buscarField!.dirty || buscarField!.touched)">
+          <div *ngIf="buscarField!.errors?.['required']">
+            *Este campo es requerido
+          </div>
+          <div *ngIf="buscarField!.errors?.['isNumberPositive']">
+            *La clave debe ser un número positivo.
+          </div>
         </div>
       </form>
     </div>

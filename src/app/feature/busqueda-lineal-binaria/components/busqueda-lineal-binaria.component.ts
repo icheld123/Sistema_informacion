@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
 
+const OUT_OF_RANGE: number = -1;
+const CLAVE_EXISTE: string = "La clave a ingresar ya existe.";
+const CLAVE_NO_EXISTE: string = "La clave buscada no existe.";
+
 @Component({
   selector: 'app-busqueda-lineal-binaria',
   templateUrl: './busqueda-lineal-binaria.component.html',
@@ -20,7 +24,7 @@ export class BusquedaLinealBinariaComponent {
 
   constructor(){}
 
-  busquedaBinaria(arreglo: number[], elemento: number): number {
+  private busquedaBinaria(arreglo: number[], elemento: number): number {
     console.log(arreglo);
     console.log(elemento);
     let inicio = 0;
@@ -28,20 +32,18 @@ export class BusquedaLinealBinariaComponent {
 
     while (inicio <= fin) {
       const mitad = Math.floor((inicio + fin) / 2);
-      //console.log(mitad);
       if (arreglo[mitad] === elemento) {
-        return mitad; // Elemento encontrado, se devuelve la posición
+        return mitad;
       } else if (arreglo[mitad] < elemento) {
         inicio = mitad + 1;
       } else {
         fin = mitad - 1;
       }
     }
-
-    return -1; // Elemento no encontrado
+    return OUT_OF_RANGE;
   }
 
-  busquedaSecuencial(arr: number[], num: number): number {
+  private busquedaSecuencial(arr: number[], num: number): number {
     num = Math.floor(num);
     let index: number = -1;
     let pos: number = 0;
@@ -53,44 +55,7 @@ export class BusquedaLinealBinariaComponent {
       }
       pos++;
     }
-
     return index;
-  }
-
-  getDatos(): void {
-    if(this.formularioAgregar.valid){
-      let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
-      if (!this.datos.includes(valorIngresado)){
-        this.datos.push(valorIngresado);
-        this.formularioAgregar.reset();
-      }
-      else {
-        alert("La clave a ingresar ya existe");
-      }
-    }
-  }
-
-  iniciarBusqueda(seleccion: number): void {
-    if(this.formularioBusqueda.valid){
-      this.inicioBusqueda = true;
-      this.valorBuscado = parseInt(this.formularioBusqueda.value.buscar, 10);
-
-      if(seleccion == 2){
-        this.mostrarArregloOrdenado();
-        this.datosOrdenados = [...this.datos];
-        this.indexBuscadoOrdenado = this.busquedaBinaria(this.datosOrdenados.sort((a, b) => a - b), this.valorBuscado);
-        if (this.indexBuscadoOrdenado > -1){
-          console.log("Numero encontrado - index: " + this.indexBuscadoOrdenado)
-        }
-        this.indexBuscadoOriginal = this.busquedaSecuencial(this.datos, this.valorBuscado);
-        console.log("Numero encontrado original - index: " + this.indexBuscadoOriginal)
-      }
-
-      if(seleccion == 1){
-        this.ocultarArregloOrdenado();
-        this.indexBuscadoOriginal = this.busquedaSecuencial(this.datos, this.valorBuscado);
-      }
-    }
   }
 
   private mostrarArregloOrdenado(){
@@ -112,6 +77,44 @@ export class BusquedaLinealBinariaComponent {
       buscar: new FormControl("", [Validators.required, isNumberPositiveValidator()])
     });
   }
+
+  public getDatos(): void {
+    if(this.formularioAgregar.valid){
+      let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
+      if (!this.datos.includes(valorIngresado)){
+        this.datos.push(valorIngresado);
+        this.formularioAgregar.reset();
+      }
+      else {
+        alert(CLAVE_EXISTE);
+      }
+    }
+  }
+
+  public iniciarBusqueda(seleccion: number): void {
+    if(this.formularioBusqueda.valid){
+      this.inicioBusqueda = true;
+      this.valorBuscado = parseInt(this.formularioBusqueda.value.buscar, 10);
+      this.indexBuscadoOriginal = this.busquedaSecuencial(this.datos, this.valorBuscado);
+
+      if(seleccion == 1){
+        this.ocultarArregloOrdenado();
+      }
+
+      if(seleccion == 2){
+        this.mostrarArregloOrdenado();
+        this.datosOrdenados = [...this.datos];
+        this.indexBuscadoOrdenado = this.busquedaBinaria(this.datosOrdenados.sort((a, b) => a - b), this.valorBuscado);
+        if (this.indexBuscadoOrdenado == OUT_OF_RANGE){
+          alert(CLAVE_NO_EXISTE);
+        }
+      }
+      this.formularioBusqueda.reset();
+    }
+  }
+
+  get datoField() { return this.formularioAgregar.get('dato'); }
+  get buscarField() { return this.formularioBusqueda.get('buscar'); }
 
   ngOnInit(): void {
     this.construirFormulario();
