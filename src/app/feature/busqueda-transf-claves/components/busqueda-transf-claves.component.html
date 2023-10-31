@@ -6,16 +6,17 @@
         <option value="" selected>--Seleccione una opcion</option>
         <option value="1">Mod</option>
         <option value="2">Cuadrado</option>
-        <option value="3">Truncamiento</option>
-        <option value="4">plegamiento suma</option>
-        <option value="5">plegamiento multiplicacion</option>
+        <option value="3">TruncamientoPar</option>
+        <option value="4">TruncamientoImpar</option>
+        <option value="5">plegamiento suma</option>
+        <option value="6">plegamiento multiplicacion</option>
       </select>
     </div>
 
     <div class="d-flex align-items-center pb-2">
       <label class="col-auto px-4" for="tamano">Tamaño de la lista:</label>
       <div class="col">
-        <input type="text" class="form-control" id="tamano" formControlName="tamano">
+        <input type="number" class="form-control" id="tamano" formControlName="tamano">
       </div>
     </div>
 
@@ -29,7 +30,75 @@
         <option value="4">Doble hash</option>
       </select>
     </div>
-
   </form>
+
+  <div class="d-flex align-items-center pb-2">
+    <button (click)="desplegar()">
+      Guardar
+    </button>
+  </div>
+  
+
+  <div *ngIf="element == true" class="d-flex align-items-center pb-2">
+    <form >
+      <div class="mb-2">
+        <label>
+          Dato a guardar :
+        </label>
+        <input type="number" [formControl]="agregarDato" class="form-control"  >
+      </div>
+        
+      <div>
+        <button (click)="agregar()"> <!-- Llama a la función agregar() -->
+          Agregar
+        </button>
+      </div>
+    </form>
+  </div>   
+  <div *ngIf="element==true">
+    <!-- pa agregar-->
+    <table class="table">
+      <thead>
+        <tr>
+          <th>clave</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let key of getKeys(elementos) ">
+          <div *ngIf="opcionColisionador===3">
+            <td>{{ key }}</td>
+            <td>{{ elementos[key] }}</td>
+          </div>
+          <div *ngIf="opcionColisionador!==3">
+            <td>{{ key }}</td>
+            <td>{{ elementos[key] }}</td>
+          </div>
+          
+        </tr>
+      </tbody>
+    </table>
+    <!-- pa buscar-->
+    <div>
+      <button (click)="toggleBuscarKeyOElemento()" [textContent]="buscarKeyOElemento ? 'Buscar Key' : 'Buscar Elemento'"></button>
+      <form >
+        <div class="mb-2">
+          <label>
+            Dato a buscar :
+          </label>
+          <input type="number" [formControl]="buscarDato" class="form-control"  >
+        </div>
+          
+        <div>
+          <button (click)="buscar()"> <!-- Llama a la función agregar() -->
+            buscar
+          </button>
+          {{Encontrado}}
+        </div>
+      </form>
+    </div>
+
+  </div>
+
 </div>
 
