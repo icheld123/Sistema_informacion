@@ -5,6 +5,8 @@ import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form
 const OUT_OF_RANGE: number = -1;
 const CLAVE_EXISTE: string = "La clave a ingresar ya existe.";
 const CLAVE_NO_EXISTE: string = "La clave buscada no existe.";
+const ESTRUCTURA_LLENA: string = "La estructura ya está llena.";
+const VACIO: string = "None";
 
 @Component({
   selector: 'app-busqueda-lineal-binaria',
@@ -12,8 +14,9 @@ const CLAVE_NO_EXISTE: string = "La clave buscada no existe.";
   styleUrls: ['./busqueda-lineal-binaria.component.css']
 })
 export class BusquedaLinealBinariaComponent {
-  public datos: number[] = [];
-  public datosOrdenados: number[] = [];
+  public datos: (number | string)[] = [];
+  public datosOrdenados: (number | string)[] = [];
+  public formularioTamano: FormGroup;
   public formularioAgregar: FormGroup;
   public formularioBusqueda: FormGroup;
   public valorBuscado: number;
@@ -21,6 +24,9 @@ export class BusquedaLinealBinariaComponent {
   public indexBuscadoOriginal: number;
   public estadoBusquedaBinaria: boolean = false;
   public inicioBusqueda: boolean = false;
+  public tamanoDefinido: boolean = false;
+  public tamanoEstructura: number;
+  private habilitado: boolean = false;
 
   constructor(){}
 
@@ -43,7 +49,7 @@ export class BusquedaLinealBinariaComponent {
     return OUT_OF_RANGE;
   }
 
-  private busquedaSecuencial(arr: number[], num: number): number {
+  private busquedaSecuencial(arr: (number | string)[], num: number): number {
     num = Math.floor(num);
     let index: number = -1;
     let pos: number = 0;
@@ -72,6 +78,12 @@ export class BusquedaLinealBinariaComponent {
     });
   }
 
+  private construirFormularioTamano(){
+    this.formularioTamano = new FormGroup({
+      tamano: new FormControl({value: "", disabled: this.habilitado}, [Validators.required, isNumberPositiveValidator()])
+    });
+  }
+
   private construirFormularioBuscar(){
     this.formularioBusqueda = new FormGroup({
       buscar: new FormControl("", [Validators.required, isNumberPositiveValidator()])
@@ -81,14 +93,41 @@ export class BusquedaLinealBinariaComponent {
   public getDatos(): void {
     if(this.formularioAgregar.valid){
       let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
-      if (!this.datos.includes(valorIngresado)){
-        this.datos.push(valorIngresado);
-        this.formularioAgregar.reset();
+      if (this.datos.length == 0){
+        this.datos = new Array(this.tamanoEstructura).fill(VACIO);
+      }
+
+      if (this.datos.includes(VACIO)){
+        if (!this.datos.includes(valorIngresado)){
+          let numeroAgregado = false;
+          for (let index = 0; index < this.datos.length; index++) {
+            if (!numeroAgregado){
+              if (this.datos[index] == VACIO){
+                this.datos[index] = valorIngresado;
+                numeroAgregado = true;
+              }
+            }
+          }
+          this.formularioAgregar.reset();
+        }
+        else {
+          alert(CLAVE_EXISTE);
+        }
       }
       else {
-        alert(CLAVE_EXISTE);
+        alert(ESTRUCTURA_LLENA);
       }
     }
+  }
+
+  public getTamano(): void {
+    if(this.formularioTamano.valid){
+      this.tamanoEstructura = parseInt(this.formularioTamano.value.tamano, 10)
+      this.tamanoField?.disable();
+      this.tamanoDefinido = true;
+      console.log(this.tamanoField!.valid)
+    }
+    console.log(this.tamanoEstructura);
   }
 
   public iniciarBusqueda(seleccion: number): void {
@@ -103,8 +142,9 @@ export class BusquedaLinealBinariaComponent {
 
       if(seleccion == 2){
         this.mostrarArregloOrdenado();
-        this.datosOrdenados = [...this.datos];
-        this.indexBuscadoOrdenado = this.busquedaBinaria(this.datosOrdenados.sort((a, b) => a - b), this.valorBuscado);
+        let arregloConDatos = this.obtenerDatosIngresados();
+        this.indexBuscadoOrdenado = this.busquedaBinaria(arregloConDatos.sort((a, b) => a - b), this.valorBuscado);
+        this.datosOrdenados = arregloConDatos.concat(this.arregloDeVacios(arregloConDatos.length));
         if (this.indexBuscadoOrdenado == OUT_OF_RANGE){
           alert(CLAVE_NO_EXISTE);
         }
@@ -113,11 +153,29 @@ export class BusquedaLinealBinariaComponent {
     }
   }
 
+  private arregloDeVacios(tamano: number): number[]{
+    let cantidadDatosVacios = this.tamanoEstructura - tamano;
+    return new Array(cantidadDatosVacios).fill('None');
+  }
+
+  private obtenerDatosIngresados(): number[]{
+    let arregloConDatos = [];
+    for (let index = 0; index < this.datos.length; index++) {
+      const dato = this.datos[index];
+      if (typeof dato === 'number' && dato > 0){
+        arregloConDatos.push(dato);
+      }
+    }
+    return arregloConDatos
+  }
+
   get datoField() { return this.formularioAgregar.get('dato'); }
   get buscarField() { return this.formularioBusqueda.get('buscar'); }
+  get tamanoField() { return this.formularioTamano.get('tamano'); }
 
   ngOnInit(): void {
     this.construirFormulario();
     this.construirFormularioBuscar();
+    this.construirFormularioTamano();
   }
 }

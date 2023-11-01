@@ -1,5 +1,41 @@
+
 <div class="container p-4">
   <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form (ngSubmit)="getTamano()" #myForm="ngForm" id="formularioTamano" [formGroup]="formularioTamano">
+        <div class="mb-3 row">
+          <label for="tamano" class="col-sm-2 col-form-label">Tamaño</label>
+          <div class="col-sm-8">
+            <input
+              formControlName="tamano"
+              type="text"
+              id="tamano"
+              name="tamano"
+              class="form-control"
+              onfocus="this.placeholder = ''"
+              onblur="this.placeholder = 'Ingrese tamaño'"
+              placeholder="Ingrese tamaño"
+              [class.is-valid]="tamanoField!.valid"
+              [class.is-invalid]="tamanoField!.touched && !tamanoField!.valid"
+              [disabled]="true">
+            <div class="mensaje-error" *ngIf="!tamanoField!.valid  && (tamanoField!.dirty || tamanoField!.touched)">
+              <div *ngIf="tamanoField!.errors?.['required']">
+                *Este campo es requerido
+              </div>
+              <div *ngIf="tamanoField!.errors?.['isNumberPositive']">
+                *La dato debe ser un número positivo.
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-primary" type="submit" [disabled]="tamanoDefinido">Aceptar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="tamanoDefinido">
     <div class="col-md-6 offset-md-3">
       <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
         <div class="mb-3 row">
