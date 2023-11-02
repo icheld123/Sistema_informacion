@@ -47,10 +47,6 @@ export class BusquedaTransfClavesComponent {
         }
       }
     }
-    if (!this.existe){
-      alert("El elemento no se encuentra en el arreglo.")
-    }
-
   }
   toggleBuscarKeyOElemento() {
     this.buscarKeyOElemento = !this.buscarKeyOElemento;
@@ -58,7 +54,8 @@ export class BusquedaTransfClavesComponent {
 
   agregar(): void {
     this.numElementos = this.numElementos +1 ;
-    if (this.numElementos>this.tamArray){
+    if (this.numElementos > this.tamArray){
+      alert("No se pueden agregar más elementos. LA estructura está completa.")
       return
     }
     let input = parseInt(this.agregarDato.value);
