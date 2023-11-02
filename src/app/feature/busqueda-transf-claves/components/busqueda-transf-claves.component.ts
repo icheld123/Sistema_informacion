@@ -26,6 +26,7 @@ export class BusquedaTransfClavesComponent {
   buscarKeyOElemento: boolean = true
   buscarDato = new FormControl()
   Encontrado :number = 0
+  existe: boolean = false;
   getDatos(){
   
   }
@@ -40,12 +41,14 @@ export class BusquedaTransfClavesComponent {
       let longitud = keys.length; // Obtener la longitud del arreglo de claves
 
       for (let i = 0; i < longitud; i++) {
-        
         if (parseInt(this.elementos[parseInt(keys[i])]) === parseInt(entrada)){
-
           this.Encontrado = parseInt(keys[i])
+          this.existe = true;
         }
       }
+    }
+    if (!this.existe){
+      alert("El elemento no se encuentra en el arreglo.")
     }
 
   }
@@ -84,8 +87,6 @@ export class BusquedaTransfClavesComponent {
     //para saber que no esta ocupado
     while (this.elementos[indice] !== undefined) {
       this.colisiones += 1;
-      console.log("cantidad de colisiones:" + this.colisiones);
-      console.log("colision en el indice :" + indice);
       indice = this.colisionador(indice);
       
     }
