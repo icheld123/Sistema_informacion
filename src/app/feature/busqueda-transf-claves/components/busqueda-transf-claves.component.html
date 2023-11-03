@@ -1,35 +1,121 @@
 <div class="container">
-  <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
-    <div class="d-flex align-items-center pb-2">
-      <label class="col-auto px-4" for="funcion">Seleccione función hash:</label>
-      <select class="form-select col" id="funcion" aria-label="Default select example" formControlName="funcion">
-        <option value="" selected>--Seleccione una opcion</option>
-        <option value="1">Mod</option>
-        <option value="2">Cuadrado</option>
-        <option value="3">Truncamiento</option>
-        <option value="4">plegamiento suma</option>
-        <option value="5">plegamiento multiplicacion</option>
-      </select>
-    </div>
-
-    <div class="d-flex align-items-center pb-2">
-      <label class="col-auto px-4" for="tamano">Tamaño de la lista:</label>
-      <div class="col">
-        <input type="text" class="form-control" id="tamano" formControlName="tamano">
+  <div class="container-menu-funcion center">
+    <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+      <div class="d-flex align-items-center pb-2">
+        <label class="col-auto px-4" for="funcion">Seleccione función hash:</label>
+        <select class="form-select col" id="funcion" aria-label="Default select example" formControlName="funcion">
+          <option value="" selected>--Seleccione una opcion</option>
+          <option value="1">Mod</option>
+          <option value="2">Cuadrado</option>
+          <option value="3">Truncamiento Par</option>
+          <option value="4">Truncamiento Impar</option>
+          <option value="5">Plegamiento Suma</option>
+          <option value="6">Plegamiento Multiplicación</option>
+        </select>
       </div>
+  
+      <div class="d-flex align-items-center pb-2">
+        <label class="col-auto px-4" for="tamano">Tamaño de la lista:</label>
+        <div class="col">
+          <input type="number" class="form-control" id="tamano" formControlName="tamano">
+        </div>
+      </div>
+  
+      <div class="d-flex align-items-center pb-4">
+        <label class="col-auto px-4" for="solucionador">Solucionador de colisiones:</label>
+        <select class="form-select col" id="solucionador" aria-label="Default select example" formControlName="solucionador">
+          <option value="" selected>--Seleccione una opcion</option>
+          <option value="1">Lineal</option>
+          <option value="2">Cuadrático</option>
+          <option value="3">Listas</option>
+          <option value="4">Doble hash</option>
+        </select>
+      </div>
+    </form>
+  
+    <div class="d-flex align-items-center pb-2">
+      <button (click)="desplegar()" [disabled]="element"  class="btn btn-primary center">
+        Guardar
+      </button>
+    </div>
+  </div>
+  
+
+  <div *ngIf="element == true"  class="d-flex align-items-center pb-2">
+    <form >
+      <div class="mb-2">
+        <label>
+          Dato a guardar:
+        </label>
+        <input type="number" [formControl]="agregarDato" class="form-control"  >
+      </div>
+        
+      <div>
+        <button (click)="agregar()" class="btn btn-primary"> <!-- Llama a la función agregar() -->
+          Agregar
+        </button>
+      </div>
+    </form>
+  </div>   
+  <div *ngIf="element==true">
+
+  <div *ngIf="opcionColisionador===3">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Clave</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let key of getKeys(elementos) ">
+            <td>{{ key }}</td>
+            <td>{{ elementos[key] }}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div *ngIf="opcionColisionador!==3">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Clave</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let key of getKeys(elementos) ">
+            <td>{{ key }}</td>
+            <td>{{ elementos[key] }}</td>
+          </tr>
+          </tbody>
+      </table>
+    </div> 
+    
+    <!-- pa buscar-->
+    <div>
+      <div><label> Búsqueda por : </label></div>
+      <button (click)="toggleBuscarKeyOElemento()" [textContent]="buscarKeyOElemento ? 'Clave' : 'Valor'" class="btn btn-primary"></button>
+      <div><label> Pulse el botón para cambiar el tipo de búsqueda  </label></div>
+      <div></div>
+      <form >
+        <div class="mb-2">
+          <label>
+            Dato a buscar:
+          </label>
+          <input type="number" [formControl]="buscarDato" class="form-control"  >
+        </div>
+          
+        <div>
+          
+          <button (click)="buscar()" class="btn btn-primary"> <!-- Llama a la función agregar() -->
+            Buscar
+          </button>
+          <p>Resultado de búsqueda: Elemento en posición {{Encontrado}}</p>
+        </div>
+      </form>
     </div>
 
-    <div class="d-flex align-items-center pb-4">
-      <label class="col-auto px-4" for="solucionador">Solucionador de colisiones:</label>
-      <select class="form-select col" id="solucionador" aria-label="Default select example" formControlName="solucionador">
-        <option value="" selected>--Seleccione una opcion</option>
-        <option value="1">Lineal</option>
-        <option value="2">Cuadrático</option>
-        <option value="3">Listas</option>
-        <option value="4">Doble hash</option>
-      </select>
-    </div>
+  </div>
 
-  </form>
 </div>
-
