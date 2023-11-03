@@ -8,9 +8,9 @@ import { MenuItem } from 'src/app/core/models/menuItems';
 })
 export class InicioComponent {
   public opciones: MenuItem[] = [
-    {path: '/busqueda-lineal-binaria', nombre: 'Estructura de busqueda secuencial o binaria'},
-    {path: '/busqueda-transf-claves', nombre: 'Estructura de busqueda por transformación de claves'},
-    {path: '/busqueda-exp-parcial', nombre: 'Estructura de busqueda por expansiones parciales'},
-    {path: '/busqueda-exp-total', nombre: 'Estructura de busqueda por expansiones totales'}
+    {path: '/busqueda-lineal-binaria', nombre: 'Estructura de búsqueda secuencial o binaria'},
+    {path: '/busqueda-transf-claves', nombre: 'Estructura de búsqueda por transformación de claves'},
+    {path: '/busqueda-exp-parcial', nombre: 'Estructura de búsqueda por expansiones parciales'},
+    {path: '/busqueda-exp-total', nombre: 'Estructura de búsqueda por expansiones totales'}
   ];
 }
