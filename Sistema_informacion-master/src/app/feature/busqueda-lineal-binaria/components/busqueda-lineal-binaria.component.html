@@ -1,0 +1,118 @@
+<div class="container p-4">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+        <div class="mb-3 row">
+          <label for="nombre" class="col-sm-2 col-form-label">Dato</label>
+          <div class="col-sm-8">
+            <input
+              formControlName="dato"
+              type="text"
+              id="dato"
+              name="dato"
+              class="form-control"
+              onfocus="this.placeholder = ''"
+              onblur="this.placeholder = 'Ingrese dato'"
+              placeholder="Ingrese dato"
+              [class.is-valid]="datoField!.valid"
+              [class.is-invalid]="datoField!.touched && !datoField!.valid">
+            <div class="mensaje-error" *ngIf="!datoField!.valid  && (datoField!.dirty || datoField!.touched)">
+              <div *ngIf="datoField!.errors?.['required']">
+                *Este campo es requerido
+              </div>
+              <div *ngIf="datoField!.errors?.['isNumberPositive']">
+                *La dato debe ser un número positivo.
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <table class="table table-bordered">
+    <thead class="table-borderless">
+      <tr class="table-light">
+        <ng-container *ngFor="let columna of datos; let i = index">
+          <th class="text-center">{{ i + 1 }}</th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <ng-container *ngFor="let numero of datos; let i = index">
+          <td class="text-center"
+              [className]="'text-center ' + (i === indexBuscadoOriginal ? 'celda-activa' : '')">
+              {{ numero }}
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="container p-4" *ngIf="datos.length > 1">
+  <h3 class="text-center">Busqueda</h3>
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <form #myForm2="ngForm" id="formularioBusqueda" [formGroup]="formularioBusqueda">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="buscar"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Ingrese clave'"
+            placeholder="Ingrese clave"
+            [class.is-valid]="buscarField!.valid"
+            [class.is-invalid]="buscarField!.touched && !buscarField!.valid">
+          <button class="btn btn-primary" type="button" (click)="iniciarBusqueda(1)">Lineal</button>
+          <button class="btn btn-secondary" type="button" (click)="iniciarBusqueda(2)">Binaria</button>
+        </div>
+        <div class="mensaje-error" *ngIf="!buscarField!.valid  && (buscarField!.dirty || buscarField!.touched)">
+          <div *ngIf="buscarField!.errors?.['required']">
+            *Este campo es requerido
+          </div>
+          <div *ngIf="buscarField!.errors?.['isNumberPositive']">
+            *La clave debe ser un número positivo.
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="container" *ngIf="inicioBusqueda">
+  <p>Index de la clave (arreglo original): {{indexBuscadoOriginal + 1}}</p>
+
+  <div *ngIf="estadoBusquedaBinaria">
+    <p><b>Arreglo ordenado:</b> </p>
+    <p>Index de la clave (arreglo ordenado): {{indexBuscadoOrdenado + 1}}</p>
+    <table class="table table-bordered">
+      <thead class="table-borderless">
+        <tr class="table-light">
+          <ng-container *ngFor="let columna of datos; let i = index">
+            <th class="text-center">{{ i + 1 }}</th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <ng-container *ngFor="let numero of datosOrdenados; let i = index">
+            <td class="text-center"
+                [className]="'text-center ' + (i === indexBuscadoOrdenado ? 'celda-activa' : '')">
+                {{ numero }}
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

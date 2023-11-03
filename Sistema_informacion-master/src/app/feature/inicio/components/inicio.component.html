@@ -1,0 +1,15 @@
+<div class="container">
+  <h2 class="text-center pt-4">Sistema de información</h2>
+  <h3 class="text-center pb-4">Inserción, eliminación y búsqueda de datos</h3>
+  <div class="row justify-content-center">
+    <div class="col-sm-6 p-2 d-flex justify-content-center" *ngFor="let item of opciones">
+      <div class="card text-center" style="min-height: 100px; width: 300px;">
+        <div class="card-body">
+          <h5 class="card-title">{{item.nombre}}</h5>
+          <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
+          <a class="btn btn-primary" [routerLink]="item.path">Iniciar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

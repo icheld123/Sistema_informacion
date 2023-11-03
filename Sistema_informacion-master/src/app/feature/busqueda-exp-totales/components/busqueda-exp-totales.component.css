@@ -1,0 +1,22 @@
+.celda-activa {
+  background-color: #fff3cd; /* Color de fondo azul, puedes personalizarlo */
+  font-weight: bold;
+}
+
+.encabezado {
+  background-color: #f8f9fa; /* Color de fondo azul, puedes personalizarlo */
+}
+
+.mensaje-error{
+  text-align: right;
+  font-size: 0.8rem;
+  color: red;
+}
+
+.is-valid{
+border: solid 2px green;
+}
+
+.is-invalid{
+border: solid 2px red;
+}

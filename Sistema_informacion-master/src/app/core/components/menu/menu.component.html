@@ -1,0 +1,46 @@
+<!-- <div class="nav-bar">
+  <nav>
+    <ul>
+      <li><a routerLink="/inicio">Inicio</a></li>
+      <li><a routerLink="/busqueda-lineal-binaria">Busqueda secuencial o binaria</a></li>
+      <li><a routerLink="/busqueda-transf-claves">Busqueda por transformación de claves</a></li>
+      <li><a routerLink="/busqueda-exp-parcial">Busqueda por expansiones parciales</a></li>
+      <li><a routerLink="/busqueda-exp-total">Busqueda por expansiones totales</a></li>
+    </ul>
+  </nav>
+</div> -->
+
+<ul class="navbar navbar-expand-lg navbar-light bg-light p-4">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            aria-current="page"
+            routerLinkActive="active"
+            routerLink="/inicio">Inicio</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Busqueda</a>
+          <ul class="dropdown-menu">
+            <li *ngFor="let item of items; let i = index"
+                class="nav-item">
+              <a
+                class="nav-link"
+                aria-current="page"
+                routerLinkActive="active"
+                [routerLink]="item.path">{{item.nombre}}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="ms-auto">
+        <a class="navbar-brand" href="#">
+          <img src="../../../../assets/image/Logo_Escudo_Horizontal.png" alt="Logo" height="50" class="d-inline-block align-text-top">
+        </a>
+      </div>
+    </div>
+  </div>
+</ul>
