@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder ,FormControl, FormGroup, Validators } from '@angular/forms';
 import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
 
+const CLAVE_NO_EXISTE: string = "La clave que busca no existe en la estructura.";
+
 @Component({
   selector: 'app-busqueda-transf-claves',
   templateUrl: './busqueda-transf-claves.component.html',
@@ -47,6 +49,9 @@ export class BusquedaTransfClavesComponent {
         }
       }
     }
+    if(this.Encontrado==undefined){
+      alert(CLAVE_NO_EXISTE);
+    }
     
   }
   toggleBuscarKeyOElemento() {
@@ -57,20 +62,19 @@ export class BusquedaTransfClavesComponent {
     //verificadores y sus alertas 
     //si la memoria esta llena
     if (this.numElementos > this.tamArray){
-      alert("No se pueden agregar más elementos. LA estructura está completa.")
+      alert("No se pueden agregar más claves. La estructura está completa.")
       return
     }
     // si hay mas de 15 digitos
     if (String(parseInt(this.agregarDato.value)).length >=15){
-      alert("No se pueden agregar elementos de mas de 15 digitos :D")
+      alert("No se pueden agregar claves de más de 15 digitos.")
       return
     }
     // para truncamiento y plegamiento que los valores sean de mas de 3 digitos
     if (String(parseInt(this.agregarDato.value)).length <2 && String(this.funcion.name)=="TruncamientoPar"){
-      alert("Para truncamiento par el dato a guardar debe tener mas de 2 digitos")
+      alert("Para truncamiento par, el claves a guardar debe tener más de 2 digitos.")
       return
     }
-    console.log(this.tamArray)
     //se terminan los verificadores 
     let input = parseInt(this.agregarDato.value);
     let indice = this.funcion(input);
@@ -106,7 +110,7 @@ export class BusquedaTransfClavesComponent {
       if (indice > this.tamArray) {
         indice = indice % this.tamArray;
       }
-      alert("Colision en : "+String(dondeEstaba)+" se pasa a "+String(indice))
+      alert("Colision en la dirección: "+String(dondeEstaba)+". Se revisa la dirección: "+String(indice))
     }
 
 
@@ -274,9 +278,6 @@ export class BusquedaTransfClavesComponent {
     
     return rta + 1;
   }
-  
-  
-
 
   plegamientoMultiplicacion(input: number, divisiones: number = 2): number {
     let inputStr = input.toString();

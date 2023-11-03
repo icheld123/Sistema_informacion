@@ -30,9 +30,9 @@
             </div>
           </div>
         </div>
-        <h5>Datos del elemento a agregar:</h5>
+        <h5>Datos de la clave a agregar:</h5>
         <div class="mb-3 row">
-          <label for="cifras" class="col-sm-2 col-form-label">Cifras:</label>
+          <label for="cifras" class="col-sm-2 col-form-label">Tamaño:</label>
           <div class="col-sm-8">
             <input
               formControlName="cifras"
@@ -41,8 +41,8 @@
               name="cifras"
               class="form-control"
               onfocus="this.placeholder = ''"
-              onblur="this.placeholder = 'Ingrese cantidad de cifras'"
-              placeholder="Ingrese cantidad de cifras"
+              onblur="this.placeholder = 'Ingrese cantidad de digitos'"
+              placeholder="Ingrese cantidad de digitos"
               [class.is-valid]="cifrasField!.valid"
               [class.is-invalid]="cifrasField!.touched && !cifrasField!.valid"
               [disabled]="true">

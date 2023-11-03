@@ -7,10 +7,12 @@ import { MenuItem } from 'src/app/core/models/menuItems';
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent {
-  public opciones: MenuItem[] = [
-    {path: '/busqueda-lineal-binaria', nombre: 'Estructura de búsqueda secuencial o binaria'},
-    {path: '/busqueda-transf-claves', nombre: 'Estructura de búsqueda por transformación de claves'},
-    {path: '/busqueda-exp-parcial', nombre: 'Estructura de búsqueda por expansiones parciales'},
-    {path: '/busqueda-exp-total', nombre: 'Estructura de búsqueda por expansiones totales'}
+  public externas: MenuItem[] = [
+    {path: '/busqueda-exp-parcial', nombre: 'Estructura de expansiones parciales'},
+    {path: '/busqueda-exp-total', nombre: 'Estructura de expansiones totales'}
+  ];
+  public internas: MenuItem[] = [
+    {path: '/busqueda-lineal-binaria', nombre: 'Estructura secuencial y binaria'},
+    {path: '/busqueda-transf-claves', nombre: 'Estructura transformación de claves'},
   ];
 }
