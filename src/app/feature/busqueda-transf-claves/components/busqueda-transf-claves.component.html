@@ -34,14 +34,14 @@
     </form>
   
     <div class="d-flex align-items-center pb-2">
-      <button (click)="desplegar()" class="btn btn-primary center">
+      <button (click)="desplegar()" [disabled]="element"  class="btn btn-primary center">
         Guardar
       </button>
     </div>
   </div>
   
 
-  <div *ngIf="element == true" class="d-flex align-items-center pb-2">
+  <div *ngIf="element == true"  class="d-flex align-items-center pb-2">
     <form >
       <div class="mb-2">
         <label>
@@ -94,7 +94,10 @@
     
     <!-- pa buscar-->
     <div>
-      <button (click)="toggleBuscarKeyOElemento()" [textContent]="buscarKeyOElemento ? 'Buscar Key' : 'Buscar Elemento'" class="btn btn-primary"></button>
+      <div><label> Búsqueda por : </label></div>
+      <button (click)="toggleBuscarKeyOElemento()" [textContent]="buscarKeyOElemento ? 'Clave' : 'Valor'" class="btn btn-primary"></button>
+      <div><label> Pulse el botón para cambiar el tipo de búsqueda  </label></div>
+      <div></div>
       <form >
         <div class="mb-2">
           <label>
@@ -104,6 +107,7 @@
         </div>
           
         <div>
+          
           <button (click)="buscar()" class="btn btn-primary"> <!-- Llama a la función agregar() -->
             Buscar
           </button>
@@ -115,4 +119,3 @@
   </div>
 
 </div>
-

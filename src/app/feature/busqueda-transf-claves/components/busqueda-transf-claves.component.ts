@@ -22,7 +22,7 @@ export class BusquedaTransfClavesComponent {
   dato: number = 0;
   agregarDato = new FormControl()
   ColisionadorListas: string =""
-  numElementos = 0;
+  numElementos = 1;
   buscarKeyOElemento: boolean = true
   buscarDato = new FormControl()
   Encontrado :number = 0
@@ -47,22 +47,39 @@ export class BusquedaTransfClavesComponent {
         }
       }
     }
+    
   }
   toggleBuscarKeyOElemento() {
     this.buscarKeyOElemento = !this.buscarKeyOElemento;
   }
 
   agregar(): void {
-    this.numElementos = this.numElementos +1 ;
+    //verificadores y sus alertas 
+    //si la memoria esta llena
     if (this.numElementos > this.tamArray){
       alert("No se pueden agregar más elementos. LA estructura está completa.")
       return
     }
+    // si hay mas de 15 digitos
+    if (String(parseInt(this.agregarDato.value)).length >=15){
+      alert("No se pueden agregar elementos de mas de 15 digitos :D")
+      return
+    }
+    // para truncamiento y plegamiento que los valores sean de mas de 3 digitos
+    if (String(parseInt(this.agregarDato.value)).length <2 && String(this.funcion.name)=="TruncamientoPar"){
+      alert("Para truncamiento par el dato a guardar debe tener mas de 2 digitos")
+      return
+    }
+    console.log(this.tamArray)
+    //se terminan los verificadores 
     let input = parseInt(this.agregarDato.value);
     let indice = this.funcion(input);
+    //aca siempre lo que devuelve la funcion debe estar en el tamaño del array asi si me devuelve 15 ps pasa a 5 y genera colision en vez de ponerlo en el 15
+    if (indice > this.tamArray) {
+      indice = indice % this.tamArray;
+    }
     this.colisiones = 0;
     this.ContadorCuadratico = 0;
-    console.log(this.elementos);
     // para la a tercera opcion del colisionador 
     if (this.opcionColisionador === 3) {
       if (this.elementos[indice] === undefined) {
@@ -83,13 +100,16 @@ export class BusquedaTransfClavesComponent {
     }
     //para saber que no esta ocupado
     while (this.elementos[indice] !== undefined) {
+      let dondeEstaba = indice;
       this.colisiones += 1;
       indice = this.colisionador(indice);
-      
+      if (indice > this.tamArray) {
+        indice = indice % this.tamArray;
+      }
+      alert("Colision en : "+String(dondeEstaba)+" se pasa a "+String(indice))
     }
-    if (indice > this.tamArray) {
-      indice = indice % this.tamArray;
-    }
+
+
     //para saber si el elemento ingresado ya esta o no en el array
     
     let esta = false;
@@ -99,10 +119,11 @@ export class BusquedaTransfClavesComponent {
       }
     }
     if (esta) {
-      console.log("El valor ya se encuentra registrado");
+      alert("El valor ya se encuentra registrado.");
+
     } else {
       this.elementos[indice] = input;
-      console.log(this.elementos);
+      this.numElementos = this.numElementos +1 ;
     }
  
   }
@@ -160,7 +181,7 @@ export class BusquedaTransfClavesComponent {
         break
       }
       default: { 
-        console.log("aiuda sufro")
+        console.log("aiuda sufro :,C ")
         break; 
      } 
     }
@@ -227,40 +248,63 @@ export class BusquedaTransfClavesComponent {
     return rta+1;
   }
 
-  plegamientoSuma(input: number, divisiones: number = 2): number {
-    let inputStr = input.toString();
-    if (inputStr.length % divisiones !== 0) {
-      inputStr = inputStr.slice(0, -1);
-    }
+  plegamientoSuma(input: number, divisiones: number = 2, previousSum: number | null = null): number {
+    const inputStr = input.toString();
     const elementos: number[] = [];
+  
     for (let i = 0; i < inputStr.length; i += divisiones) {
-      elementos.push(parseInt(inputStr[i] + inputStr[i + 1]));
+      const pair = inputStr.slice(i, i + divisiones);
+      elementos.push(parseInt(pair));
     }
+  
+    if (inputStr.length % divisiones !== 0) {
+      const lastElement = parseInt(inputStr.slice(-1));
+      elementos.push(lastElement);
+    }
+  
     let rta = elementos.reduce((a, b) => a + b, 0);
-    if (rta >= this.tamArray) {
-      rta = this.plegamientoSuma(rta);
+  
+    if (rta === previousSum) {
+      return rta + 1; // Rompe la recursión si la suma no cambia
     }
-    return rta+1;
+  
+    if (rta >= this.tamArray) {
+      return this.plegamientoSuma(rta, divisiones, rta); // Llama recursivamente con la suma actual
+    }
+    
+    return rta + 1;
   }
+  
+  
+
 
   plegamientoMultiplicacion(input: number, divisiones: number = 2): number {
     let inputStr = input.toString();
-    if (inputStr.length % divisiones !== 0) {
-      inputStr = inputStr.slice(0, -1);
+  
+    // Asegurarse de que la cadena tenga una longitud divisible por la cantidad de divisiones.
+    const padding = divisiones - (inputStr.length % divisiones);
+    if (padding > 0) {
+      inputStr = '0'.repeat(padding) + inputStr;
     }
+  
     const elementos: number[] = [];
-    let resultado = 1;
     for (let i = 0; i < inputStr.length; i += divisiones) {
-      elementos.push(parseInt(inputStr[i] + inputStr[i + 1]));
+      elementos.push(parseInt(inputStr.slice(i, i + divisiones)));
     }
+  
+    let resultado = 1;
     for (const i of elementos) {
       resultado *= i;
     }
+  
     if (resultado >= this.tamArray) {
       resultado = this.plegamientoMultiplicacion(resultado);
     }
-    return resultado+1;
+  
+    return resultado + 1;
   }
+  
+  
 
   mod(input: number, divisor: number = this.tamArray): number {
     return (input % divisor) + 1;
