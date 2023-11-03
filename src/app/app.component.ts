@@ -12,7 +12,8 @@ export class AppComponent {
     {path: 'busqueda-lineal-binaria', nombre: 'Secuencial o binaria'},
     {path: 'busqueda-transf-claves', nombre: 'Transformación de claves'},
     {path: 'busqueda-exp-parcial', nombre: 'Expansiones parciales'},
-    {path: 'busqueda-exp-total', nombre: 'Expansiones totales'}
+    {path: 'busqueda-exp-total', nombre: 'Expansiones totales'},
+    {path: 'busqueda-indices', nombre: 'Índices'}
   ];
 
 }

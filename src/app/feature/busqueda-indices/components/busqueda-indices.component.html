@@ -1,0 +1,290 @@
+<body>
+    <!--Sección menú indices-->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class=" align-items-center pb-2">
+                    <label class="col-auto px-4" for="funcion">Seleccione el tipo de indice:</label>
+                    <select [(ngModel)]="selectedOption" class="form-select col" id="funcion" aria-label="Default select example" >
+                      <option value="" selected>--Seleccione una opcion</option>
+                      <option value="1">Indices primario densos</option>
+                      <option value="2">Indices primario no densos</option>
+                      <option value="3">Indices secundarios densos</option>
+                      <option value="4">Indices secundarios no densos</option>
+                      <option value="5">Indices multinivel primarios</option>
+                      <option value="6">Indices multinivel secundarios</option>
+
+                    </select>
+                    <div class="col-md-8 offset-md-3"  >
+                        <form (ngSubmit)="setDatos(registros_totales,tam_registros,tam_indices,tam_bloques)">
+                            <label class="offset-md-2" for="">Registros totales: </label>
+                            <input style="margin-top:10px;" type="text" id="registros_totales" name="registros_totales" placeholder="Ingrese la cantidad de registros" class="form-control" [(ngModel)]="registros_totales">
+                            <label class="offset-md-2" for="">Tamaño de registros: </label>
+                            <input style="margin-top:10px;" type="text" id="tam_registros" name="tam_registros" placeholder="Ingrese el tamaño en bytes de los registros" class="form-control" [(ngModel)]="tam_registros">
+                            <label class="offset-md-2" for="">Tamaño de indices: </label>
+                            <input style="margin-top:10px;" type="text" id="tam_indices" name="tam_indices" placeholder="Ingrese el tamaño en bytes de los indices" class="form-control" [(ngModel)]="tam_indices">
+                            <label class="offset-md-2" for="">Tamaño de bloques: </label>
+                            <input style="margin-top:10px;" type="text" id="tam_bloques" name="tam_bloques" placeholder="Ingrese el tamaño en bytes de los bloques" class="form-control" [(ngModel)]="tam_bloques">
+                        </form>
+                        
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    <!--Sección crear registros-->
+    <div class="container" [ngSwitch]="selectedOption">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <form (ngSubmit)="crearRegistro(idActual, infoActual)">
+                        <div class="mb-2">
+                            <input type="number"id= "id"name="id"class="form-control" placeholder="Introduce el id"[(ngModel)]="idActual" >
+                        </div>
+                        <div>
+                            <input type="text"id="info"name="info"class="form-control" placeholder="Introduce la informacion" [(ngModel)]="infoActual">
+                        </div>
+                        <button class="btn btn-primary mt-2" >
+                            Enviar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!--Sección indices primarios densos-->
+                <div class="row" style="margin-top:10px" *ngSwitchCase="'1'">
+                    <h3 class="offset-md-3">Indices Primarios Densos</h3>
+                    
+                    <div class="col-md-6 offset-md-3">
+                    <table class="table table-bordered" style="width: 5rem;">
+                        <tr class="table-light">
+                            <th>indices</th>
+                        </tr>
+                        <tbody>
+                            <ng-container *ngFor="let bloque of bloques_indices; let i = index">
+                                <td>bloque {{i+1}}</td>
+                            <ng-container *ngFor="let indice of bloque;">
+                                <td>
+                                    {{indice}}
+                                </td>
+                            </ng-container>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="col-md-2">
+                        <table class="table table-bordered" style="width: 5rem; ">
+                            <tr class="table-light">
+                                <th>id</th>
+                                <th>dato</th>
+                            </tr>
+                            <ng-container *ngFor="let bloque of bloques; let i = index">
+                               
+                                <td>bloque {{i+1}}</td>
+                                <tr>
+                                    <ng-container *ngFor="let registro of bloque">
+                                        <td>
+                                            {{registro.id}}
+                                        </td>
+                                        <td>
+                                            {{registro.info}}
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-container>
+                            
+                        </table>
+                    </div>
+                </div>
+            <!--Seccion primarios no densos-->
+            <div class="row" style="margin-top:10px" *ngSwitchCase="'2'">
+                <h3 class="offset-md-3">Indices Primarios No Densos</h3>
+                <div class="col-md-6 offset-md-3">
+                <table class="table table-bordered" style="width: 5rem;">
+                    <tr class="table-light">
+                        <th>indices</th>
+                    </tr>
+                    <tbody>
+                        <ng-container *ngFor="let indice of indices">
+                            <tr>
+                                {{indice}}
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                </div>
+                <div class="col-md-2">
+                    <table class="table table-bordered" style="width: 5rem; ">
+                        <tr class="table-light">
+                            <th>id</th>
+                            <th>dato</th>
+                        </tr>
+                        <ng-container *ngFor="let registro of registros">
+                            <tr>
+                                <th>
+                                    {{registro.id}}
+                                </th>
+                                <th>
+                                    {{registro.info}}
+                                </th>
+                            </tr>
+                        </ng-container>
+                        
+                    </table>
+                </div>
+            </div>
+            <!--Seccion secundarios densos-->
+            <div class="row" style="margin-top:10px" *ngSwitchCase="'3'">
+                <h3 class="offset-md-3">Indices Secundarios Densos</h3>
+                <div class="col-md-6 offset-md-3">
+                <table class="table table-bordered" style="width: 5rem;">
+                    <tr class="table-light">
+                        <th>indices</th>
+                    </tr>
+                    <tbody>
+                        <ng-container *ngFor="let indice of indices">
+                            <tr>
+                                {{indice}}
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                </div>
+                <div class="col-md-2">
+                    <table class="table table-bordered" style="width: 5rem; ">
+                        <tr class="table-light">
+                            <th>id</th>
+                            <th>dato</th>
+                        </tr>
+                        <ng-container *ngFor="let registro of registros">
+                            <tr>
+                                <th>
+                                    {{registro.id}}
+                                </th>
+                                <th>
+                                    {{registro.info}}
+                                </th>
+                            </tr>
+                        </ng-container>
+                        
+                    </table>
+                </div>
+            </div>
+            <!--Seccion secundarios no densos-->
+            <div class="row" style="margin-top:10px" *ngSwitchCase="'4'">
+                <h3 class="offset-md-3">Indices Secundarios No Densos</h3>
+                <div class="col-md-6 offset-md-3">
+                <table class="table table-bordered" style="width: 5rem;">
+                    <tr class="table-light">
+                        <th>indices</th>
+                    </tr>
+                    <tbody>
+                        <ng-container *ngFor="let indice of indices">
+                            <tr>
+                                {{indice}}
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                </div>
+                <div class="col-md-2">
+                    <table class="table table-bordered" style="width: 5rem; ">
+                        <tr class="table-light">
+                            <th>id</th>
+                            <th>dato</th>
+                        </tr>
+                        <ng-container *ngFor="let registro of registros">
+                            <tr>
+                                <th>
+                                    {{registro.id}}
+                                </th>
+                                <th>
+                                    {{registro.info}}
+                                </th>
+                            </tr>
+                        </ng-container>
+                        
+                    </table>
+                </div>
+            </div>
+            <!--Seccion multinivel primarios-->
+            <div class="row" style="margin-top:10px" *ngSwitchCase="'5'">
+                <h3 class="offset-md-3">Indices Multinivel Primario</h3>
+                <div class="col-md-6 offset-md-3">
+                <table class="table table-bordered" style="width: 5rem;">
+                    <tr class="table-light">
+                        <th>indices</th>
+                    </tr>
+                    <tbody>
+                        <ng-container *ngFor="let indice of indices">
+                            <tr>
+                                {{indice}}
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                </div>
+                <div class="col-md-2">
+                    <table class="table table-bordered" style="width: 5rem; ">
+                        <tr class="table-light">
+                            <th>id</th>
+                            <th>dato</th>
+                        </tr>
+                        <ng-container *ngFor="let registro of registros">
+                            <tr>
+                                <th>
+                                    {{registro.id}}
+                                </th>
+                                <th>
+                                    {{registro.info}}
+                                </th>
+                            </tr>
+                        </ng-container>
+                        
+                    </table>
+                </div>
+            </div>
+            <!--Seccion multinivel secundarios-->
+            <div class="row" style="margin-top:10px" *ngSwitchCase="'6'">
+                <h3 class="offset-md-3">Indices Multinivel Secundario</h3>
+                <div class="col-md-6 offset-md-3">
+                <table class="table table-bordered" style="width: 5rem;">
+                    <tr class="table-light">
+                        <th>indices</th>
+                    </tr>
+                    <tbody>
+                        <ng-container *ngFor="let indice of indices">
+                            <tr>
+                                {{indice}}
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                </div>
+                <div class="col-md-2">
+                    <table class="table table-bordered" style="width: 5rem; ">
+                        <tr class="table-light">
+                            <th>id</th>
+                            <th>dato</th>
+                        </tr>
+                        <ng-container *ngFor="let registro of registros">
+                            <tr>
+                                <th>
+                                    {{registro.id}}
+                                </th>
+                                <th>
+                                    {{registro.info}}
+                                </th>
+                            </tr>
+                        </ng-container>
+                        
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <label style="padding-right:10px;" class="offset-md-3">Crear Estructura</label>
+                        <button class="btn btn-primary" (click)="funcionSeleccionada()">
+                            Crear
+                        </button>
+        </div>
+</body>
