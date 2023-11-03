@@ -1,7 +1,20 @@
 <div class="container p-4">
+  <h3>Expansiones Parciales</h3>
   <div class="row">
     <div class="col-md-6 offset-md-3">
-      <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+      <h5>Datos del elemento a agregar:</h5>
+      <form (ngSubmit)="getTamano()" #myForm="ngForm" id="construirFormularioTamano" [formGroup]="formularioTamano">
+        <div class="mb-3 row">
+          <label for="nombre" class="col-sm-2 col-form-label">Cifras:</label>
+          <div class="col-sm-8">
+            <input formControlName="cifras" type="text" id="cifras" name="cifras" class="form-control">
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+          </div>
+        </div>
+      </form>
+      <!-- <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
         <div class="mb-3 row">
           <label for="nombre" class="col-sm-2 col-form-label">Dato</label>
           <div class="col-sm-8">
@@ -11,7 +24,63 @@
             <button class="btn btn-primary" type="submit">Guardar</button>
           </div>
         </div>
-      </form>
+      </form> -->
+    </div>
+  </div>
+  <div>
+    <div class="row" *ngIf="tamanoDefinido">
+      <div class="col-md-6 offset-md-3">
+        <form (ngSubmit)="getDatos()" #myForm="ngForm" id="formularioAgregar" [formGroup]="formularioAgregar">
+          <div class="mb-3 row">
+            <label for="dato" class="col-sm-2 col-form-label">Valor:</label>
+            <div class="col-sm-8">
+              <input
+                formControlName="dato"
+                type="text"
+                id="dato"
+                name="dato"
+                class="form-control"
+                onfocus="this.placeholder = ''"
+                onblur="this.placeholder = 'Ingrese el valor'"
+                placeholder="Ingrese el valor"
+                [class.is-valid]="datoField!.valid"
+                [class.is-invalid]="datoField!.touched && !datoField!.valid">
+              <div class="mensaje-error" *ngIf="!datoField!.valid  && (datoField!.dirty || datoField!.touched)">
+                <div *ngIf="datoField!.errors?.['required']">
+                  *Este campo es requerido
+                </div>
+                <div *ngIf="datoField!.errors?.['isNumberPositive']">
+                  *La dato debe ser un número positivo.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="nombre" class="col-sm-2 col-form-label">Nombre:</label>
+            <div class="col-sm-8">
+              <input
+                formControlName="nombre"
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="form-control"
+                onfocus="this.placeholder = ''"
+                onblur="this.placeholder = 'Ingrese el nombre'"
+                placeholder="Ingrese el nombre"
+                [class.is-valid]="formularioAgregar.get('nombre')!.valid"
+                [class.is-invalid]="formularioAgregar.get('nombre')!.touched && !formularioAgregar.get('nombre')!.valid">
+              <div class="mensaje-error" *ngIf="!formularioAgregar.get('nombre')!.valid && formularioAgregar.get('nombre')!.touched">
+                <div *ngIf="formularioAgregar.get('nombre')!.errors?.['required']">
+                  *Este campo es requerido
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <button class="btn btn-primary" type="submit">Guardar</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

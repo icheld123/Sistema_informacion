@@ -6,3 +6,9 @@
 .encabezado {
   background-color: #f8f9fa; /* Color de fondo azul, puedes personalizarlo */
 }
+h3{
+  text-align: center;
+  margin: 1em;
+  color: #4976ff;
+  font-weight: 800;
+}

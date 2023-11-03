@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
+import { ModeloUsuario } from 'src/app/feature/modelo_usuario'
 
 const OUT_OF_RANGE: number = -1;
+const SOBRE_RANGO_CIFRAS = "La cantidad de cifras no es igual a la digitó inicialmente: ";
 const CLAVE_EXISTE: string = "La clave a ingresar ya existe.";
 const COLUMNAS_MINIMAS_PARA_REDUCCION_TOTAL: number = 4;
 const OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION: number = COLUMNAS_MINIMAS_PARA_REDUCCION_TOTAL/2;
@@ -11,7 +13,6 @@ const CANTIDAD_FILAS: number = 3;
 const CANTIDAD_COLUMNAS_INICIALES: number = 2;
 const DENSIDAD_PARA_EXPANSION: number = 0.85;
 const DENSIDAD_PARA_REDUCCION: number = 1.05;
-
 
 @Component({
   selector: 'app-busqueda-exp-totales',
@@ -22,6 +23,7 @@ export class BusquedaExpTotalesComponent {
   public datos: number[] = [];
   public formularioAgregar: FormGroup;
   public formularioBusqueda: FormGroup;
+  public formularioTamano: FormGroup;
   private filas: number = CANTIDAD_FILAS;
   private columnas: number = CANTIDAD_COLUMNAS_INICIALES;
   private densidad: number = DENSIDAD_PARA_EXPANSION;
@@ -30,8 +32,14 @@ export class BusquedaExpTotalesComponent {
   public filaBuscado: number;
   public filaBuscadoColision: number;
   public colBuscado: number;
+  public cifrasDatos: number;
   public busquedaIniciada: boolean = false;
   public mensaje: string = "";
+  private habilitado: boolean = false;
+  public tamanoDefinido: boolean = false;
+  public nuevoDato: ModeloUsuario[] = [];
+
+  constructor() {}
 
   private insertar(valor: number): void {
     if (this.validarExistenciaClave(valor)) {
@@ -47,10 +55,11 @@ export class BusquedaExpTotalesComponent {
         }
       }
 
-      const factorCarga = (this.cantidadClaves() + this.contarNumColisiones()) /
-        (this.filas * this.columnas);
-
-      if (factorCarga >= this.densidad) {
+      if (
+        (this.cantidadClaves() + this.contarNumColisiones()) /
+          (this.filas * this.columnas) >=
+        this.densidad
+      ) {
         this.expansionTotal();
       }
     } else {
@@ -125,28 +134,41 @@ export class BusquedaExpTotalesComponent {
     this.tabla = nueva_tabla;
   }
 
-  private buscar(valor_buscar: number): void {
+  private buscar(valorBuscar: number): void {
     let existeClave = false;
-    let num_fila = 0;
+    let numFila = 0;
+
     for (const fila of this.tabla) {
-      num_fila++;
-      if (fila.includes(valor_buscar)) {
+      numFila++;
+      if (fila.includes(valorBuscar)) {
         existeClave = true;
-        this.filaBuscado = num_fila - 1;
-        this.colBuscado = valor_buscar % this.columnas;
+        this.filaBuscado = numFila - 1;
+        this.colBuscado = valorBuscar % this.columnas;
         this.filaBuscadoColision = OUT_OF_RANGE;
-        this.mensaje = `\nLa clave ${valor_buscar} se encuentra en la fila ${num_fila} y columna ${valor_buscar % this.columnas}`;
+        for (const usuario of this.nuevoDato) {
+          if (usuario.id === valorBuscar) {
+            existeClave = true;
+            this.mensaje = `La clave ${valorBuscar} se encuentra en [${numFila}, ${valorBuscar % this.columnas}] -> ${usuario.info}`;
+            break; // Si encontraste el valor, no es necesario seguir buscando.
+          }
+        }
       }
     }
 
     for (const [clave, valor] of Object.entries(this.diccColisiones)) {
       for (const numero of valor) {
-        if (numero === valor_buscar) {
+        if (numero === valorBuscar) {
           existeClave = true;
           this.colBuscado = OUT_OF_RANGE;
           this.filaBuscado = OUT_OF_RANGE;
           this.filaBuscadoColision = parseInt(clave, 10);
-          this.mensaje = `\nLa clave ${valor_buscar} se encuentra en la posición ${clave} del diccionario de colisiones`;
+          for (const usuario of this.nuevoDato) {
+            if (usuario.id === valorBuscar) {
+              existeClave = true;
+              this.mensaje = `La clave ${valorBuscar} se encuentra en la posición ${clave} del diccionario de colisiones -> ${usuario.info}`;
+              break; // Si encontraste el valor, no es necesario seguir buscando.
+            }
+          }
         }
       }
     }
@@ -155,31 +177,31 @@ export class BusquedaExpTotalesComponent {
       this.colBuscado = OUT_OF_RANGE;
       this.filaBuscado = OUT_OF_RANGE;
       this.filaBuscadoColision = OUT_OF_RANGE;
-      this.mensaje = `\nLa clave ${valor_buscar} no se encuentra en la estructura`;
+      this.mensaje = `\nLa clave ${valorBuscar} no se encuentra en la estructura`;
     }
   }
 
-  private eliminar(valor_recibido: number): void {
-    let se_elimino = false;
+  private eliminar(valorRecibido: number): void {
+    let seElimino = false;
 
     for (const clave in this.diccColisiones) {
-      const indice = this.diccColisiones[clave].indexOf(valor_recibido);
+      const indice = this.diccColisiones[clave].indexOf(valorRecibido);
       if (indice !== -1) {
         this.diccColisiones[clave].splice(indice, 1);
-        se_elimino = true;
+        seElimino = true;
       }
     }
 
     for (const fila of this.tabla) {
       for (let col = 0; col < fila.length; col++) {
-        if (fila[col] === valor_recibido) {
+        if (fila[col] === valorRecibido) {
           fila[col] = null;
-          se_elimino = true;
+          seElimino = true;
         }
       }
     }
 
-    if (!se_elimino) {
+    if (!seElimino) {
       alert(CLAVE_A_ELIMINAR_NO_EXISTE);
     }
 
@@ -189,12 +211,12 @@ export class BusquedaExpTotalesComponent {
         DENSIDAD_PARA_REDUCCION
     ) {
       if (this.columnas >= COLUMNAS_MINIMAS_PARA_REDUCCION_TOTAL) {
-        this.reduccion_total();
+        this.reduccionTotal();
       }
     }
   }
 
-  private reduccion_total(): void {
+  private reduccionTotal(): void {
     this.columnas /= OPERADOR_COLUMNAS_PARA_REDUCCION_EXPANSION;
     const nueva_tabla: (number | null)[][] = Array.from(
       { length: this.filas },
@@ -240,9 +262,23 @@ export class BusquedaExpTotalesComponent {
     this.tabla = nueva_tabla;
   }
 
+  public getTamano(): void {
+    if(this.formularioTamano.valid){
+      this.cifrasDatos = parseInt(this.formularioTamano.value.cifras, 10)
+      this.cifrasField?.disable();
+      this.tamanoDefinido = true;
+      console.log(this.cifrasDatos)
+    }
+  }
+  private construirFormularioTamano(){
+    this.formularioTamano = new FormGroup({
+      cifras: new FormControl({value: "", disabled: this.habilitado}, [Validators.required, isNumberPositiveValidator()])
+    });
+  }
   private construirFormulario(){
     this.formularioAgregar = new FormGroup({
-      dato: new FormControl("", [Validators.required, isNumberPositiveValidator()])
+      dato: new FormControl("", [Validators.required, isNumberPositiveValidator()]),
+      nombre: new FormControl("", [Validators.required])
     });
   }
 
@@ -255,7 +291,14 @@ export class BusquedaExpTotalesComponent {
   public getDatos(): void {
     if(this.formularioAgregar.valid){
       let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
-      this.insertar(valorIngresado);
+      let nombreUsuario = this.formularioAgregar.value.nombre;
+      if(valorIngresado.toString().length == this.cifrasDatos){
+        this.insertar(valorIngresado);
+      }
+      else{
+        alert(SOBRE_RANGO_CIFRAS+this.cifrasDatos);
+      }
+      this.nuevoDato.push({id: valorIngresado,info: nombreUsuario});
       this.formularioAgregar.reset();
     }
   }
@@ -302,9 +345,14 @@ export class BusquedaExpTotalesComponent {
     return parseInt(valor);
   }
 
+  get cifrasField() { return this.formularioTamano.get('cifras'); }
+  get datoField() { return this.formularioAgregar.get('dato'); }
+  get nombreField() { return this.formularioAgregar.get('nombre'); }
+
   ngOnInit(): void {
     this.construirFormulario();
     this.construirFormularioBuscar();
+    this.construirFormularioTamano();
   }
 
 }

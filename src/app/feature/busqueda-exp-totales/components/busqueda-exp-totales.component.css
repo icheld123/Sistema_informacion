@@ -20,3 +20,9 @@ border: solid 2px green;
 .is-invalid{
 border: solid 2px red;
 }
+h3{
+  text-align: center;
+  margin: 1em;
+  color: #4976ff;
+  font-weight: 800;
+}

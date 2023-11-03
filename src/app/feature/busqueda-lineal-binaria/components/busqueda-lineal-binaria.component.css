@@ -16,3 +16,17 @@ border: solid 2px green;
 .is-invalid{
 border: solid 2px red;
 }
+.center{
+  display:block;
+  width:100%;
+  margin:0 auto;
+}
+.container-datos{
+  background-color: aliceblue;
+}
+h3{
+  text-align: center;
+  margin: 1em;
+  color: #4976ff;
+  font-weight: 800;
+}

@@ -9,10 +9,10 @@ import { MenuItem } from './core/models/menuItems';
 export class AppComponent {
   title = 'proyecto_sistema';
   public opciones: MenuItem[] = [
-    {path: 'busqueda-lineal-binaria', nombre: 'Busqueda secuencial o binaria'},
-    {path: 'busqueda-transf-claves', nombre: 'Busqueda por transformación de claves'},
-    {path: 'busqueda-exp-parcial', nombre: 'Busqueda por expansiones parciales'},
-    {path: 'busqueda-exp-total', nombre: 'Busqueda por expansiones totales'}
+    {path: 'busqueda-lineal-binaria', nombre: 'Secuencial o binaria'},
+    {path: 'busqueda-transf-claves', nombre: 'Transformación de claves'},
+    {path: 'busqueda-exp-parcial', nombre: 'Expansiones parciales'},
+    {path: 'busqueda-exp-total', nombre: 'Expansiones totales'}
   ];
 
 }

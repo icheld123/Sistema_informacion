@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { isNumberPositiveValidator } from 'src/app/shared/utils/validadores/form.validacion';
+import { ModeloUsuario } from 'src/app/feature/modelo_usuario'
 
 const OUT_OF_RANGE: number = -1;
 const CLAVE_EXISTE: string = "La clave a ingresar ya existe.";
 const CLAVE_NO_EXISTE: string = "La clave buscada no existe.";
 const ESTRUCTURA_LLENA: string = "La estructura ya está llena.";
 const VACIO: string = "None";
+const SOBRE_RANGO_CIFRAS = "La cantidad de cifras no es igual a la digitó inicialmente: ";
 
 @Component({
   selector: 'app-busqueda-lineal-binaria',
@@ -26,7 +28,9 @@ export class BusquedaLinealBinariaComponent {
   public inicioBusqueda: boolean = false;
   public tamanoDefinido: boolean = false;
   public tamanoEstructura: number;
+  public cifrasDatos: number;
   private habilitado: boolean = false;
+  public nuevoDato: ModeloUsuario[] = [];
 
   constructor(){}
 
@@ -74,13 +78,15 @@ export class BusquedaLinealBinariaComponent {
 
   private construirFormulario(){
     this.formularioAgregar = new FormGroup({
-      dato: new FormControl("", [Validators.required, isNumberPositiveValidator()])
+      dato: new FormControl("", [Validators.required, isNumberPositiveValidator()]),
+      nombre: new FormControl("", [Validators.required])
     });
   }
 
   private construirFormularioTamano(){
     this.formularioTamano = new FormGroup({
-      tamano: new FormControl({value: "", disabled: this.habilitado}, [Validators.required, isNumberPositiveValidator()])
+      tamano: new FormControl({value: "", disabled: this.habilitado}, [Validators.required, isNumberPositiveValidator()]),
+      cifras: new FormControl({value: "", disabled: this.habilitado}, [Validators.required, isNumberPositiveValidator()])
     });
   }
 
@@ -93,31 +99,44 @@ export class BusquedaLinealBinariaComponent {
   public getDatos(): void {
     if(this.formularioAgregar.valid){
       let valorIngresado = parseInt(this.formularioAgregar.value.dato, 10)
-      if (this.datos.length == 0){
-        this.datos = new Array(this.tamanoEstructura).fill(VACIO);
-      }
-
-      if (this.datos.includes(VACIO)){
-        if (!this.datos.includes(valorIngresado)){
-          let numeroAgregado = false;
-          for (let index = 0; index < this.datos.length; index++) {
-            if (!numeroAgregado){
-              if (this.datos[index] == VACIO){
-                this.datos[index] = valorIngresado;
-                numeroAgregado = true;
+      let nombreUsuario = this.formularioAgregar.value.nombre;
+      if (valorIngresado.toString().length == this.cifrasDatos){
+        if (this.datos.length == 0){
+          this.datos = new Array(this.tamanoEstructura).fill(VACIO);
+        }
+  
+        if (this.datos.includes(VACIO)){
+          if (!this.datos.includes(valorIngresado)){
+            let numeroAgregado = false;
+            for (let index = 0; index < this.datos.length; index++) {
+              if (!numeroAgregado){
+                if (this.datos[index] == VACIO){
+                  this.datos[index] = valorIngresado;
+                  this.nuevoDato[index] = {
+                    id: valorIngresado,
+                    info: nombreUsuario
+                  }
+                  numeroAgregado = true;
+                }
               }
             }
+            this.formularioAgregar.reset();
           }
-          this.formularioAgregar.reset();
+          else {
+            alert(CLAVE_EXISTE);
+          }
         }
         else {
-          alert(CLAVE_EXISTE);
+          alert(ESTRUCTURA_LLENA);
         }
       }
-      else {
-        alert(ESTRUCTURA_LLENA);
+      else{
+        alert(SOBRE_RANGO_CIFRAS + this.cifrasDatos);
       }
     }
+    this.nuevoDato.forEach((usuario) => {
+      console.log(`ID: ${usuario.id}, Info: ${usuario.info}`);
+    });
   }
 
   public getTamano(): void {
@@ -125,9 +144,10 @@ export class BusquedaLinealBinariaComponent {
       this.tamanoEstructura = parseInt(this.formularioTamano.value.tamano, 10)
       this.tamanoField?.disable();
       this.tamanoDefinido = true;
-      console.log(this.tamanoField!.valid)
+      this.cifrasDatos = parseInt(this.formularioTamano.value.cifras, 10)
+      this.cifrasField?.disable();
+      this.nuevoDato.length = this.tamanoEstructura;
     }
-    console.log(this.tamanoEstructura);
   }
 
   public iniciarBusqueda(seleccion: number): void {
@@ -170,8 +190,10 @@ export class BusquedaLinealBinariaComponent {
   }
 
   get datoField() { return this.formularioAgregar.get('dato'); }
+  get nombreField() { return this.formularioAgregar.get('nombre'); }
   get buscarField() { return this.formularioBusqueda.get('buscar'); }
   get tamanoField() { return this.formularioTamano.get('tamano'); }
+  get cifrasField() { return this.formularioTamano.get('cifras'); }
 
   ngOnInit(): void {
     this.construirFormulario();
